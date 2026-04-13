@@ -1,0 +1,72 @@
+.story {
+  padding: 200px 80px;
+  text-align: center;
+  background: #f5f5f5;  /* 👈 نفس الخلفية */
+}
+
+.story h2 {
+  font-family: 'Playfair Display', serif;  /* 👈 الخط */
+  font-size: 38px;
+  font-weight: 600;
+  color: #1f2a56;   /* 👈 اللون الكحلي الغامق */
+  margin-bottom: 25px;
+  letter-spacing: 0.5px;
+}
+
+.story .subtitle {
+  max-width: 650px;
+  margin: 0 auto 60px;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* CARDS */
+.story-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.story-card {
+  text-align: left;
+    transition: 0.3s;
+}
+
+.story-card img {
+  width: 90%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.story-card h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.story-card p {
+  color: #777;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+/* BUTTON */
+.story-card button {
+  background: #0a0f5c;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.story-card button:hover {
+  background: #060b3f;
+}
+
+.story-card:hover {
+  transform: translateY(-8px);
+}
