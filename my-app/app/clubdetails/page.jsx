@@ -1,7 +1,8 @@
 "use client";
+import Link from "next/link";
 import "./clubdetails.css";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function ClubPage() {
   return (
@@ -38,7 +39,9 @@ export default function ClubPage() {
                 <img src="/coach3.jpg" />
               </div>
 
-              <button className="appointment">Make Appointment</button>
+              <Link href="/appointment" className="appointment">
+                Make Appointment
+              </Link>
             </div>
 
           </div>

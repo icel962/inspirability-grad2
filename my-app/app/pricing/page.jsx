@@ -1,16 +1,25 @@
 "use client";
 import "./pricing.css";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function PricingPage() {
   const [isMonthly, setIsMonthly] = useState(true);
+  const router = useRouter();
+
+  const handleUpgrade = (plan, amount) => {
+    const duration = isMonthly ? "Monthly" : "Yearly";
+    router.push(`/payment?amount=${amount}&plan=${encodeURIComponent(plan)}&duration=${duration}`);
+  };
+
+  const litePrice = isMonthly ? 16 : 12;
+  const proPrice = isMonthly ? 35 : 28;
 
   return (
     <>
-     
-
+      <Navbar />
       <section className="pricing">
         <h1>Our Pricing Plans</h1>
         <p className="subtitle">
@@ -60,7 +69,7 @@ export default function PricingPage() {
               Lite <span>(Recommended)</span>
             </h3>
             <h2 className="price">
-              ${isMonthly ? "16" : "12"} <small>/year</small>
+              ${litePrice} <small>/{isMonthly ? "month" : "year"}</small>
             </h2>
 
             <p>
@@ -76,14 +85,16 @@ export default function PricingPage() {
               <li>Site password protection</li>
             </ul>
 
-            <button className="btn primary">Upgrade plan</button>
+            <button className="btn primary" onClick={() => handleUpgrade("Lite", litePrice)}>
+              Upgrade plan
+            </button>
           </div>
 
           {/* Pro */}
           <div className="card">
             <h3>Pro</h3>
             <h2 className="price">
-              ${isMonthly ? "35" : "28"} <small>/year</small>
+              ${proPrice} <small>/{isMonthly ? "month" : "year"}</small>
             </h2>
 
             <p>
@@ -99,7 +110,9 @@ export default function PricingPage() {
               <li>✔ Site password protection</li>
             </ul>
 
-            <button className="btn">Upgrade plan</button>
+            <button className="btn" onClick={() => handleUpgrade("Pro", proPrice)}>
+              Upgrade plan
+            </button>
           </div>
         </div>
       </section>

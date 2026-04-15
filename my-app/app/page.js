@@ -3,6 +3,8 @@ import About from "./components/home/About";
 import Categories from "./components/home/Categories";
 import Story from "./components/home/Story";
 import Contact from "./components/home/Contact";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 export default function HomePage() {
   return (

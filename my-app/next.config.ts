@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
-    return [
+  images: {
+    remotePatterns: [
       {
-        source: '/',
-        destination: '/home',
-        permanent: true,
+        protocol: 'https',
+        hostname: '1000logos.net',
+        port: '',
+        pathname: '/**',
       },
-    ]
+    ],
   },
 };
 

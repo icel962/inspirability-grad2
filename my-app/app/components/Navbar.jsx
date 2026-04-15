@@ -8,22 +8,20 @@ import "../styles/navbar.css";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!localStorage.getItem("token");
-  });
+  const [mounted, setMounted] = useState(false); // New state to track mounting
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Default to false
+  
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    // 1. Signal that the component has mounted on the client
+    // 1. Signal that we are now on the client
     setMounted(true);
 
-    // 2. Check for the token only on the client
+    // 2. Only check localStorage after mounting
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
 
-    // 3. Handle scroll listener
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
@@ -32,7 +30,6 @@ export default function Navbar() {
       setIsLoggedIn(!!localStorage.getItem("token"));
     };
 
-    syncAuthState();
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("storage", syncAuthState);
 
@@ -46,14 +43,13 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.clear();
-    // No need for a separate setIsLoggedIn state; 
-    // simply redirecting or refreshing will re-evaluate the 'isLoggedIn' constant
+    setIsLoggedIn(false); 
     router.push("/login");
-    if (typeof window !== "undefined") {
-        window.location.reload(); // Ensures the Navbar state refreshes globally
-    }
+    // Removed reload() as manual state update is cleaner
   };
 
+  // IMPORTANT: Prevent rendering dynamic auth links until mounted
+  // This ensures the server and client initial HTML match perfectly
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="logo" onClick={() => router.push("/")} style={{ cursor: "pointer" }}>
@@ -61,7 +57,7 @@ export default function Navbar() {
         <span>INSPIRABILITY</span>
       </div>
 
-      <ul className="nav-links">
+<ul className="nav-links">
         <li className={isActive("/") ? "active" : ""}>
           <Link href="/">Home</Link>
         </li>
@@ -75,30 +71,38 @@ export default function Navbar() {
           <Link href="/contact">Contact</Link>
         </li>
 
-        {/* Use the calculated isLoggedIn constant */}
-        {!isLoggedIn ? (
+        {/* New Pricing Link */}
+        <li className={isActive("/pricing") ? "active" : ""}>
+          <Link href="/pricing">Pricing</Link>
+        </li>
+
+        {mounted && (
           <>
-            <li className={isActive("/signup") ? "active" : ""}>
-              <Link href="/signup">Sign Up</Link>
-            </li>
-            <li>
-              <Link href="/login" className={`login-btn ${isActive("/login") ? "active-btn" : ""}`}>
-                Login
-              </Link>
-            </li>
-          </>
-        ) : (
-          <>
-            <li className={isActive("/profile") ? "active" : ""}>
-              <Link href="/profile" className="profile-link">
-                Profile
-              </Link>
-            </li>
-            <li>
-              <button onClick={handleLogout} className="logout-btn-nav">
-                Logout
-              </button>
-            </li>
+            {!isLoggedIn ? (
+              <>
+                <li className={isActive("/signup") ? "active" : ""}>
+                  <Link href="/signup">Sign Up</Link>
+                </li>
+                <li>
+                  <Link href="/login" className={`login-btn ${isActive("/login") ? "active-btn" : ""}`}>
+                    Login
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className={isActive("/profile") ? "active" : ""}>
+                  <Link href="/profile" className="profile-link">
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="logout-btn-nav">
+                    Logout
+                  </button>
+                </li>
+              </>
+            )}
           </>
         )}
       </ul>

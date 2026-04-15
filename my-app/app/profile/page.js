@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
-import "./profile.css";
+import "../styles/profile.css";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);

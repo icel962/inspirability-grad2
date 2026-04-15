@@ -1,7 +1,7 @@
 "use client";
 import "./sport.css";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { useState } from "react";
 
 const clubs = [

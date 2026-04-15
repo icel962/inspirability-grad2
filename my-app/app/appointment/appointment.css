@@ -2,7 +2,6 @@
 .appointment-section {
   min-height: 100vh;
   padding: 120px 20px;
-
   background: url("/images/home 1.png") center/cover no-repeat;
 }
 
@@ -27,14 +26,13 @@
 
 /* GLASS CARD 🔥 */
 .appointment-card {
-  background: rgba(10, 15, 40, 0.6); /* 👈 لون كحلي غامق شيك */
+  background: rgba(10, 15, 40, 0.6); 
   backdrop-filter: blur(14px);
-
   border-radius: 22px;
   padding: 35px;
-
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  animation: fadeUp 0.8s ease;
 }
 
 .card-content h2 {
@@ -75,16 +73,19 @@
   width: 100%;
   height: 44px;
   padding: 10px 14px;
-
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.4);
-
   background: rgba(255,255,255,0.08);
-  color: #fff;
-
+  color: #fff; /* Text color when selected */
   outline: none;
   font-size: 13px;
   transition: 0.3s;
+}
+
+/* FIX: DROPDOWN OPTIONS BLACK TEXT */
+.form-group select option {
+  color: #000000;      /* Makes text in the list black */
+  background: #ffffff; /* Ensures list background is white */
 }
 
 .form-group textarea {
@@ -108,10 +109,8 @@
   margin-top: 10px;
   padding: 20px;
   border-radius: 16px;
-
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.3);
-
   text-align: left;
 }
 
@@ -127,20 +126,16 @@
   margin-bottom: 5px;
 }
 
-/* BUTTON 🔥 */
+/* BUTTONS */
 .send-btn {
   margin-top: 20px;
-
   background: #2bbcd3;
   color: white;
-
   border: none;
   padding: 10px 22px;
-
   border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
-
   cursor: pointer;
   transition: 0.3s;
 }
@@ -150,15 +145,29 @@
   transform: translateY(-1px);
 }
 
+/* LOGOUT BUTTON ONLY */
+.logout-btn-nav {
+  background: transparent;
+  color: #ff4d4d; /* Red text for logout */
+  border: 1px solid #ff4d4d;
+  padding: 6px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn-nav:hover {
+  background: #ff4d4d;
+  color: white;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
   }
-}
-
-.appointment-card {
-  animation: fadeUp 0.8s ease;
 }
 
 @keyframes fadeUp {
