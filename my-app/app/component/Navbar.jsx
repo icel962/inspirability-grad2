@@ -8,15 +8,21 @@ import "./navbar.css";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!localStorage.getItem("token");
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false); // To track hydration
+  
   const pathname = usePathname();
   const router = useRouter();
 
-  // 1. Single effect to handle scroll listeners
   useEffect(() => {
+    // 1. Signal that the component has mounted on the client
+    setMounted(true);
+
+    // 2. Check for the token only on the client
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+
+    // 3. Handle scroll listener
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
@@ -29,13 +35,27 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.clear();
-    // No need for a separate setIsLoggedIn state; 
-    // simply redirecting or refreshing will re-evaluate the 'isLoggedIn' constant
+    setIsLoggedIn(false); // Update state immediately
     router.push("/login");
-    if (typeof window !== "undefined") {
-        window.location.reload(); // Ensures the Navbar state refreshes globally
-    }
+    // You can remove window.location.reload() if you update state properly
   };
+
+  // IMPORTANT: If not mounted, render a "neutral" version or null 
+  // to ensure server and client match perfectly on first pass.
+  if (!mounted) {
+    return (
+      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+        <div className="logo" style={{ cursor: "pointer" }}>
+          <Image src="/images/logo.jpeg" alt="logo" width={40} height={40} />
+          <span>INSPIRABILITY</span>
+        </div>
+        {/* Render static links only during hydration to avoid mismatch */}
+        <ul className="nav-links">
+           <li><Link href="/home">Home</Link></li>
+        </ul>
+      </nav>
+    );
+  }
 
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
@@ -62,7 +82,6 @@ export default function Navbar() {
           <Link href="/contact">Contact</Link>
         </li>
 
-        {/* Use the calculated isLoggedIn constant */}
         {!isLoggedIn ? (
           <>
             <li className={isActive("/signup") ? "active" : ""}>

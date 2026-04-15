@@ -1,0 +1,175 @@
+.payment {
+  background: #f3f4f6;
+  min-height: 100vh;
+  padding: 10px 40px 40px; /* ✅ FIXED spacing */
+}
+
+/* TITLE */
+.title {
+  text-align: center;
+  margin: 10px 0 20px;
+  padding-top: 80px;
+}
+
+/* METHODS */
+.card-types {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.type {
+  background: #e5e7eb;
+  padding: 14px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.type:hover {
+  transform: scale(1.08);
+  background: white;
+}
+
+.type.active {
+  background: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* CARDS */
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.credit-card {
+  width: 400px;
+  height: 230px;
+  padding: 30px;
+  border-radius: 18px;
+  color: white;
+  position: relative;
+  transition: 0.3s;
+}
+
+.credit-card:hover {
+  transform: scale(1.05);
+}
+
+.red {
+  background: linear-gradient(135deg, #ff0000, #7c2d12);
+}
+
+.blue {
+  background: linear-gradient(135deg, #1e3a8a, #6b21a8);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.number {
+  margin: 25px 0;
+  letter-spacing: 3px;
+}
+
+.card-bottom {
+  display: flex;
+  gap: 40px;
+  font-size: 12px;
+}
+
+.card-name {
+  margin-top: 20px;
+}
+
+.brand {
+  position: absolute;
+  bottom: 15px;
+  right: 20px;
+}
+
+/* CONTENT */
+.content {
+  display: flex;
+  gap: 40px;
+}
+
+/* FORM */
+.form {
+  flex: 1;
+}
+
+.form input {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  background: #e5e7eb;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.checkbox {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+/* SUMMARY */
+.summary {
+  flex: 1;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+}
+
+.line,
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+}
+
+.total {
+  font-weight: bold;
+}
+
+/* BUTTONS */
+.btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+/* OTHER METHODS */
+.method-box {
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  width: 400px;
+  margin: 40px auto;
+}
