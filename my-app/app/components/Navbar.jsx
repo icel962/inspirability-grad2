@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import "../styles/navbar.css";
 
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false); // New state to track mounting

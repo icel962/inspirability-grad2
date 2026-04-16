@@ -37,13 +37,19 @@ export default function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      alert("Welcome back!");
-      router.replace("/home");
+      if (data.user.role === "parent") {
+        alert("Welcome Parent!");
+        router.replace("/home"); // 👈 your parent dashboard page
+      } else if (data.user.role === "admin") {
+        alert("Welcome Admin!");
+        router.replace("/admin"); // 👈 your admin dashboard page
+      } else {
+        alert("Access denied. Please use valid credentials.");
+      }
     } catch (err) {
       alert("Server error. Check if backend is running.");
     }
   };
-
   return (
     <div className="signup">
       <div className="signup-container">

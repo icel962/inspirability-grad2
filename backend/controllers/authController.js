@@ -49,9 +49,28 @@ exports.signup = [
         return res.status(400).json({ message: "Role is required" });
       }
 
-      if (role === "admin") {
-        return res.status(403).json({ message: "Admin cannot signup" });
+      // ================= ADMIN =================
+else if (role === "admin") {
+  const hashedPassword = await bcrypt.hash(data.password, 10);
+
+  db.query(
+    "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+    [data.email, hashedPassword, role],
+    (err, result) => {
+      if (err) {
+        console.error("ADMIN INSERT ERROR:", err);
+        return res.status(500).json(err);
       }
+
+      return res.json({
+        message: "Admin registered successfully",
+        userId: result.insertId,
+      });
+    }
+  );
+
+  return; // important to stop further execution
+}
 
       const hashedPassword = await bcrypt.hash(data.password, 10);
 

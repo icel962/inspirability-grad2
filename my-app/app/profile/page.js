@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
-import "../styles/profile.css";
+import "./profile.css";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -19,7 +19,7 @@ export default function Profile() {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        router.push("/login");
+        router.push("/profile");
         return;
       }
 
