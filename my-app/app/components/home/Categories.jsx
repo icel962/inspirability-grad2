@@ -17,7 +17,7 @@ export default function Categories() {
           <p>Our support team will get assistance from AI-powered.</p>
         </div>
 
-        <Link href="/school" className="card" style={{ textDecoration: "none", color: "inherit" }}>
+        <Link href="/school" className="card" style={{ textDecoration: "none", color: "white" }}>
           <div>
             <i className="fas fa-graduation-cap"></i>
             <h3>School</h3>
@@ -31,12 +31,17 @@ export default function Categories() {
           <p>Our support team will get assistance from AI-powered.</p>
         </div>
 
-        <div className="card">
+        <Link href="/contacts" className="card" style={{ textDecoration: "none", color: "white" }}>
+
+        <div>
           <i className="fas fa-address-book"></i>
           <h3>Contacts</h3>
           <p>Our support team will get assistance from AI-powered.</p>
         </div>
+       </Link>
+
       </div>
+
     </section>
   );
 }
