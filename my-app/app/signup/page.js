@@ -297,8 +297,8 @@ export default function Signup() {
           {step === totalSteps && (
             <div className="success-box">
               <div className="check-circle">✓</div>
-              <h3>Data Recorded Successfully</h3>
-              <p>Click below to finish</p>
+              <h3 className="subtitle">Data Recorded Successfully</h3>
+              <p className="subtitle">Click below to finish</p>
 
               <button onClick={handleSubmit}>Submit & Go to Login</button>
             </div>

@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { contacts } from "./contacts-data.js";
 import "./contact-details.css";
@@ -39,7 +38,7 @@ function ContactNotFound() {
         The selected contact could not be loaded. Please return to the contacts
         page and choose a contact again.
       </p>
-      <Link className="contact-details-empty__link" href="/contact-desc">
+      <Link className="contact-details-empty__link" href="/contacts">
         Back to contacts
       </Link>
     </div>
@@ -60,7 +59,7 @@ export default async function ContactDetailsPage({ searchParams }) {
             <nav className="contact-details-breadcrumb" aria-label="Breadcrumb">
               <Link href="/">Home</Link>
               <span aria-hidden="true">/</span>
-              <Link href="/contact-desc">Contacts</Link>
+              <Link href="/contacts">Contacts</Link>
               <span aria-hidden="true">/</span>
               <span>{contact?.name || "Details"}</span>
             </nav>
@@ -71,7 +70,7 @@ export default async function ContactDetailsPage({ searchParams }) {
               ) : (
                 <div className="contact-details-layout">
                   <aside className="contact-profile-card">
-                    <Link className="contact-profile-card__back" href="/contact-desc">
+                    <Link className="contact-profile-card__back" href="/contacts">
                       &#8592; Back to contacts
                     </Link>
 

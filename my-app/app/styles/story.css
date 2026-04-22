@@ -1,15 +1,15 @@
 .story {
-  padding: 200px 80px;
+  padding: 100px 60px;
   text-align: center;
-  background: #f5f5f5;  /* 👈 نفس الخلفية */
+  background-color: white;
 }
 
 .story h2 {
-  font-family: 'Playfair Display', serif;  /* 👈 الخط */
+  margin-bottom: 25px;
+  font-family: 'Poppins', sans-serif;
   font-size: 38px;
   font-weight: 600;
-  color: #1f2a56;   /* 👈 اللون الكحلي الغامق */
-  margin-bottom: 25px;
+  color: #1f2a56;
   letter-spacing: 0.5px;
 }
 
@@ -21,7 +21,6 @@
   line-height: 1.8;
 }
 
-/* CARDS */
 .story-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -29,8 +28,12 @@
 }
 
 .story-card {
-  text-align: left;
-    transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: 0.3s;
 }
 
 .story-card img {
@@ -38,12 +41,13 @@
   height: 200px;
   object-fit: cover;
   border-radius: 10px;
-  margin-bottom: 15px;
+  margin: 0 auto 15px;
 }
 
 .story-card h3 {
   font-size: 18px;
   margin-bottom: 5px;
+  color: #0a0a0f;
 }
 
 .story-card p {
@@ -52,7 +56,6 @@
   margin-bottom: 15px;
 }
 
-/* BUTTON */
 .story-card button {
   background: #0a0f5c;
   color: white;
@@ -69,4 +72,28 @@
 
 .story-card:hover {
   transform: translateY(-8px);
+}
+
+@media (max-width: 1100px) {
+  .story-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .story {
+    padding: 80px 24px;
+  }
+
+  .story h2 {
+    font-size: 30px;
+  }
+
+  .story-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .story-card img {
+    width: 100%;
+  }
 }
