@@ -11,11 +11,13 @@ export default function Categories() {
       </p>
 
       <div className="cards">
-        <div className="card">
-          <i className="fas fa-medal"></i>
-          <h3>Sport</h3>
-          <p>Our support team will get assistance from AI-powered.</p>
-        </div>
+        <Link href="/sport" className="card" style={{ textDecoration: "none", color: "white" }}>
+          <div>
+            <i className="fas fa-medal"></i>
+            <h3>Sport</h3>
+            <p>Our support team will get assistance from AI-powered.</p>
+          </div>
+        </Link>
 
         <Link href="/school" className="card" style={{ textDecoration: "none", color: "white" }}>
           <div>
@@ -25,11 +27,13 @@ export default function Categories() {
           </div>
         </Link>
 
-        <div className="card">
-          <i className="fas fa-stethoscope"></i>
-          <h3>Medical</h3>
-          <p>Our support team will get assistance from AI-powered.</p>
-        </div>
+        <Link href="/medical" className="card" style={{ textDecoration: "none", color: "white" }}>
+          <div>
+            <i className="fas fa-stethoscope"></i>
+            <h3>Medical</h3>
+            <p>Our support team will get assistance from AI-powered.</p>
+          </div>
+        </Link>
 
         <Link href="/contacts" className="card" style={{ textDecoration: "none", color: "white" }}>
 
