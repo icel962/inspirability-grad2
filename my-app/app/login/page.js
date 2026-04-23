@@ -20,40 +20,61 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-    if (!formData.email || !formData.password)
-      return alert("Please enter credentials");
+  if (!formData.email || !formData.password)
+    return alert("Please enter credentials");
 
-    try {
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+  try {
+    const res = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
 
-      const data = await res.json();
-      if (!res.ok) return alert(data.message || "Login failed");
+    const data = await res.json();
+    if (!res.ok) return alert(data.message || "Login failed");
 
-      // SAVE WORK TOKEN AND USER DATA
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+    // SAVE WORK TOKEN AND USER DATA
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("role", data.user.role);
 
-if (data.user.role === "parent") {
-  router.replace("/home");
-} else if (data.user.role === "admin") {
-  router.replace("/admin");
-} else if (data.user.role === "school") {
-  router.replace("/home");
-} else if (data.user.role === "sport") {
-  router.replace("/home");
-} else if (data.user.role === "clinic") {
-  router.replace("/home");
-} else {
-  alert("Unknown role");
-}
-    } catch (err) {
-      alert("Server error. Check if backend is running.");
+    switch (data.user.role) {
+      case "parent":
+        alert("Welcome Parent!");
+        router.replace("/home");
+        break;
+
+      case "admin":
+        alert("Welcome Admin!");
+        router.replace("/admin");
+        break;
+
+      case "clinic":
+        alert("Welcome Clinic!");
+        router.replace("/medical");
+        break;
+
+      case "sport":
+        alert("Welcome Sport!");
+        router.replace("/sport");
+        break;
+
+      case "school":
+        alert("Welcome School!");
+        router.replace("/school");
+        break;
+
+      default:
+        alert("Unknown role");
+        router.replace("/login");
     }
-  };
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error. Check if backend is running.");
+  }
+};
+
   return (
     <div className="signup">
       <div className="signup-container">
