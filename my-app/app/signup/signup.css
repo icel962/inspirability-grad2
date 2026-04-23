@@ -84,57 +84,42 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+ overflow-y: auto;
   gap: 10px;
   padding: 20px;
 }
 
 /* INPUT */
-.right input,
-.right select {
+/* ================= INPUT ================= */
+.right input {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 6px;
+  padding: 16px 18px;
+  border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 15px;
-  transition: all 0.3s ease;
   background: #fff;
   color: #333;
+
+  transition: all 0.25s ease;
 }
 
-.right input::placeholder,
-.right select::placeholder {
-  color: #999;
-  font-weight: 500;
-}
-
-.right input:focus,
-.right select:focus {
-  outline: none;
-  border-color: #0a0f5c;
-  box-shadow: 0 0 0 3px rgba(10, 15, 92, 0.1);
-}
-
-.right input[type="file"] {
-  padding: 8px;
-  border-style: dashed;
-}
-
-.input-group {
-  width: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.input-group label {
-  display: none;
-}
-
+/* placeholder */
 .right input::placeholder {
-  color: #999;
+  color: #aaa;
   font-weight: 500;
+}
+
+/* hover */
+.right input:hover {
+  border-color: #bbb;
+}
+
+/* focus 🔥 */
+.right input:focus {
+  outline: none;
+  border-color: #2d3cff;
+  box-shadow: 0 0 0 3px rgba(45, 60, 255, 0.15);
+  transform: scale(1.02);
 }
 
 /* BUTTONS */
@@ -335,4 +320,72 @@ button {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+.login-form {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-form h2 {
+  color: #0a0f5c;
+  margin-bottom: 10px;
+}
+
+
+.login-form button {
+  width: 100%;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2d3cff, #0a0f5c);
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.login-form button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 5px 20px rgba(45,60,255,0.4);
+}
+
+.left h1 {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  color: #fff;
+
+  text-shadow: 0 5px 20px rgba(0,0,0,0.6);
+
+  margin: 0;
+}
+
+.left p {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+
+  letter-spacing: 0.5px;
+
+  text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+
+  margin: 0;
+}
+.left {
+  text-align: center;
+}
+
+.left-content {
+  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.25);
+  padding: 25px 35px;
+  border-radius: 16px;
 }

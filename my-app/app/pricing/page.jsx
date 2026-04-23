@@ -1,13 +1,19 @@
 "use client";
 import "./pricing.css";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react"; 
 import { useRouter } from "next/navigation";
 
 export default function PricingPage() {
   const [isMonthly, setIsMonthly] = useState(true);
+  const [mounted, setMounted] = useState(false); 
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; 
 
   const handleUpgrade = (plan, amount) => {
     const duration = isMonthly ? "Monthly" : "Yearly";
@@ -20,6 +26,7 @@ export default function PricingPage() {
   return (
     <>
       <Navbar />
+
       <section className="pricing">
         <h1>Our Pricing Plans</h1>
         <p className="subtitle">
@@ -42,6 +49,7 @@ export default function PricingPage() {
 
         {/* Cards */}
         <div className="cards">
+
           {/* Starter */}
           <div className="card">
             <h3>Starter</h3>
