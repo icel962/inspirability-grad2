@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "./appointment.css";
@@ -25,7 +26,19 @@ export default function Appointment() {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const searchParams = useSearchParams();
+const typeParam = searchParams.get("type");
+const nameParam = searchParams.get("name");
 
+
+useEffect(() => {
+  if (nameParam) {
+    setFormData((prev) => ({
+      ...prev,
+      type: `${typeParam} - ${nameParam}`,
+    }));
+  }
+}, [typeParam, nameParam]);
   // 1. Fetch User Profile Data on Mount
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -155,17 +168,14 @@ export default function Appointment() {
 
                 <div className="form-group">
                   <label>Appointment Type</label>
-                  <select 
-                    name="type" 
-                    required 
-                    value={formData.type} 
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Category</option>
-                    <option value="school">School Inquiry</option>
-                    <option value="clinic">Clinic Session</option>
-                    <option value="sport">Sport Activity</option>
-                  </select>
+                  <input
+  type="text"
+  name="type"
+  value={formData.type}
+  readOnly
+  className="readonly-input"
+  placeholder="Select Category"
+/>
                 </div>
               </div>
 

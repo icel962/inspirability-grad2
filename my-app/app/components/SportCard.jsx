@@ -11,19 +11,21 @@ const SportCard = ({ sport }) => {
           <div className="placeholder-logo">No Logo</div>
         )}
       </div>
+
       <h3 className="school-title">{sport.sport_center_name}</h3>
+
       <div className="school-info">
-        <p>
-          <strong>Type:</strong> {sport.sport_center_type || "N/A"}
-        </p>
-        <p>
-          <strong>Location:</strong> {sport.location || "N/A"}
-        </p>
-        <p>
-          <strong>Phone:</strong> {sport.phone_number || "N/A"}
-        </p>
+        <p><strong>Type:</strong> {sport.sport_center_type || "N/A"}</p>
+        <p><strong>Location:</strong> {sport.location || "N/A"}</p>
+        <p><strong>Phone:</strong> {sport.phone_number || "N/A"}</p>
       </div>
-      <Link href={`/appointment?sportId=${sport.sport_center_id}&sportName=${encodeURIComponent(sport.sport_center_name)}`}>
+
+      {/* 👇 التعديل هنا */}
+      <Link
+        href={`/appointment?type=sport&name=${encodeURIComponent(
+          sport.sport_center_name
+        )}`}
+      >
         <button className="details-btn">Book Appointment</button>
       </Link>
     </div>
