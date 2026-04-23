@@ -187,8 +187,8 @@ export default function PaymentPage() {
                     style={{ objectFit: 'contain' }}
                 />
              </div>
-            <h3>Pay with {method === "paypal" ? "PayPal" : "Apple Pay"}</h3>
-            <p>You will be redirected to complete your <strong>${amount}</strong> payment.</p>
+            <h3 className="method-title">Pay with {method === "paypal" ? "PayPal" : "Apple Pay"}</h3>
+            <p className="method-title">You will be redirected to complete your <strong>${amount}</strong> payment.</p>
             <button className="pay-btn large" onClick={handlePay} disabled={loading}>
                 {loading ? "Connecting..." : `Continue to ${method}`}
             </button>

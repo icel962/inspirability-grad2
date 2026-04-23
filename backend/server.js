@@ -7,6 +7,7 @@ const medicalClinicRoutes = require("./routes/medicalClinicRoutes");
 const parentRoutes = require("./routes/parentRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const schoolRoutes = require("./routes/schoolRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api", medicalClinicRoutes);
 app.use("/api", parentRoutes);
 app.use("/api", appointmentRoutes);
 app.use("/api", schoolRoutes); 
+app.use("/api", profileRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => {

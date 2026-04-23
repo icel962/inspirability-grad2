@@ -1,3 +1,7 @@
+body{
+background-color: #ffffff;
+}
+
 /* GLOBAL CONTAINER */
 .payment-container {
     max-width: 1100px;
@@ -170,7 +174,12 @@
     top: 100px;
     border: 1px solid #eee;
 }
-
+.method-title {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
 .summary-box .item {
     display: flex;
     justify-content: space-between;
