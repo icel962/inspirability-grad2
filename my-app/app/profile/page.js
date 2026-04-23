@@ -2,20 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import axios from "axios";
+import Image from "next/image";
+
+import SchoolProfile from "@/app/components/Profile/SchoolProfile";
+import ParentProfile from "@/app/components/Profile/ParentProfile";
+import SportProfile from "@/app/components/Profile/SportProfile";
+import ClinicProfile from "@/app/components/Profile/ClinicProfile";
+import ProfileHeader from "@/app/components/Profile/ProfileHeader";  
 import "./profile.css";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
-  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
+
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (typeof window === "undefined") return;
+  // ================= FETCH PROFILE =================
+  const fetchProfile = async () => {
+    try {
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -23,158 +29,117 @@ export default function Profile() {
         return;
       }
 
-      try {
-        const res = await axios.get("http://localhost:5000/api/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+      const res = await axios.get("http://localhost:5000/api/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const { profile: userData, role } = res.data;
-
-        if (userData.DOB_child) {
-          userData.DOB_child = userData.DOB_child.split("T")[0];
-        }
-
-        const processedData = {
-          parent: userData,
-          role: role,
-        };
-
-        setProfile(processedData);
-        setFormData(userData);
-      } catch (err) {
-        console.error("Profile Fetch Error:", err);
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          localStorage.removeItem("token");
-          router.push("/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [router]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await axios.put(
-        "http://localhost:5000/api/parents/update",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.status === 200) {
-        setProfile((prev) => ({ ...prev, parent: formData }));
-        setEditMode(false);
-        alert("Profile updated successfully!");
-      }
+      setProfile(res.data);
+      setFormData(res.data.profile);
     } catch (err) {
-      alert("Error while saving profile settings.");
+      console.error(err);
+      router.push("/login");
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  // ================= SAVE =================
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.put(
+        "http://localhost:5000/api/profile/update",
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // 🔥 نعمل refetch عشان نضمن التحديث
+      await fetchProfile();
+
+      alert("Updated successfully ✅");
+    } catch (err) {
+      console.error(err);
+      alert("Error while saving ❌");
+    }
+  };
+
+  // ================= LOGOUT =================
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/login");
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
-if (!profile || !profile.parent) {
-  return <div style={{ padding: "50px" }}>No profile data</div>;
-}
-  const { parent } = profile;
+  // ================= LOADING =================
+  if (loading) return <div>Loading...</div>;
+  if (!profile) return <div>No profile data</div>;
+
+  const user = profile.profile;
+  const role = profile.role;
+
+  // ================= GET NAME =================
+  const getName = () => {
+    if (role === "parent") return user.name;
+    if (role === "school") return user.school_name;
+    if (role === "sport") return user.sport_center_name;
+    if (role === "clinic" || role === "medical") return user.clinic_name;
+    return "User";
+  };
 
   return (
     <div className="profile">
-      {/* TOP CARD */}
-      <div className="profile-card">
-        <Image
-          src="/images/profile.png"
-          alt="profile"
-          width={100}
-          height={100}
+
+      {/* ================= TOP CARD ================= */}
+<ProfileHeader
+  user={profile.profile}
+  role={profile.role}
+  setProfile={setProfile}
+/>
+
+      {/* ================= ROLE COMPONENT ================= */}
+      {role === "school" && (
+        <SchoolProfile
+          user={user}
+          formData={formData}
+          setFormData={setFormData}
+          handleSave={handleSave}
         />
-        <h3>{parent.name || "User Name"}</h3>
-        <span>{profile.role?.toUpperCase()} ACCOUNT</span>
-        <button className="edit-photo-btn">Edit Photo</button>
-      </div>
+      )}
 
-      {/* INFO CARDS GRID */}
-      <div className="profile-grid">
-        
-        {/* Parent Info */}
-        <div className="card">
-          <h3>Parent Info</h3>
-          <div className="info">
-            <div className="info-item">
-              <strong>Full Name:</strong>
-              {editMode ? (
-                <input name="name" value={formData.name || ""} onChange={handleChange} />
-              ) : (
-                <span>{parent.name || "N/A"}</span>
-              )}
-            </div>
-            <div className="info-item">
-              <strong>Government:</strong>
-              {editMode ? (
-                <input name="government" value={formData.government || ""} onChange={handleChange} />
-              ) : (
-                <span>{parent.government || "N/A"}</span>
-              )}
-            </div>
-            <div className="info-item">
-              <strong>City:</strong>
-              {editMode ? (
-                <input name="city" value={formData.city || ""} onChange={handleChange} />
-              ) : (
-                <span>{parent.city || "N/A"}</span>
-              )}
-            </div>
-          </div>
-          <button onClick={() => (editMode ? handleSave() : setEditMode(true))}>
-            {editMode ? "Save Info" : "Edit Info"}
-          </button>
-        </div>
+      {role === "parent" && (
+        <ParentProfile
+          user={user}
+          formData={formData}
+          setFormData={setFormData}
+          handleSave={handleSave}
+        />
+      )}
 
-        {/* Kid Info */}
-        <div className="card">
-          <h3>Kid Info</h3>
-          <div className="info">
-            <p><strong>DOB:</strong> {parent.DOB_child || "N/A"}</p>
-            <p><strong>Gender:</strong> {parent.gender_child || "N/A"}</p>
-            <p><strong>Special Type:</strong> {parent.medical_classification_diagnose || "None"}</p>
-            <p><strong>Education:</strong> {parent.education_level_child || "N/A"}</p>
-          </div>
-          <button onClick={() => setEditMode(true)}>Edit Info</button>
-        </div>
+      {role === "sport" && (
+        <SportProfile
+          user={user}
+          formData={formData}
+          setFormData={setFormData}
+          handleSave={handleSave}
+        />
+      )}
 
-        {/* Contact Info */}
-        <div className="card">
-          <h3>Contact Info</h3>
-          <div className="info">
-            <p><strong>Email:</strong> {parent.email || "N/A"}</p>
-            <div className="info-item">
-              <strong>Phone:</strong>
-              {editMode ? (
-                <input name="tel_no" value={formData.tel_no || ""} onChange={handleChange} />
-              ) : (
-                <span>{parent.tel_no || "N/A"}</span>
-              )}
-            </div>
-          </div>
-          <button onClick={() => (editMode ? handleSave() : setEditMode(true))}>
-            {editMode ? "Save Contact" : "Edit Info"}
-          </button>
-        </div>
-      </div>
+      {(role === "clinic" || role === "medical") && (
+        <ClinicProfile
+          user={user}
+          formData={formData}
+          setFormData={setFormData}
+          handleSave={handleSave}
+        />
+      )}
 
-      {/* LOGOUT */}
+      {/* ================= LOGOUT ================= */}
       <div className="logout">
         <button onClick={handleLogout}>Logout</button>
       </div>

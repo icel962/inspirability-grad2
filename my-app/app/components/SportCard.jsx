@@ -21,11 +21,7 @@ const SportCard = ({ sport }) => {
       </div>
 
       {/* 👇 التعديل هنا */}
-      <Link
-        href={`/appointment?type=sport&name=${encodeURIComponent(
-          sport.sport_center_name
-        )}`}
-      >
+      <Link href={`/appointment?type=sport&id=${sport.sport_center_id}&name=${encodeURIComponent(sport.sport_center_name)}`}>
         <button className="details-btn">Book Appointment</button>
       </Link>
     </div>

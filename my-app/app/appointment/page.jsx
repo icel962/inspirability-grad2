@@ -29,16 +29,17 @@ export default function Appointment() {
   const searchParams = useSearchParams();
 const typeParam = searchParams.get("type");
 const nameParam = searchParams.get("name");
+const idParam = searchParams.get("id");
 
 
 useEffect(() => {
   if (nameParam) {
     setFormData((prev) => ({
       ...prev,
-      type: `${typeParam} - ${nameParam}`,
+      type:  nameParam,
     }));
   }
-}, [typeParam, nameParam]);
+}, [nameParam]);
   // 1. Fetch User Profile Data on Mount
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -79,20 +80,37 @@ useEffect(() => {
   };
 
   // 3. Submit Appointment
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
+  setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:5000/api/appointments/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+  let bodyData = {
+    appointment_date: formData.appointment_date,
+    appointment_time: formData.appointment_time,
+    notes: formData.notes,
+    status: "pending",
+    type: typeParam,
+  };
+
+ 
+  if (typeParam === "sport") {
+    bodyData.sport_center_id = idParam;
+  } else if (typeParam === "school") {
+    bodyData.school_id = idParam;
+  } else if (typeParam === "clinic") {
+    bodyData.clinic_id = idParam;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/appointments/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(bodyData),
+    });
 
       if (res.ok) {
         alert("Success! Your appointment has been booked.");

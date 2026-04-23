@@ -23,11 +23,7 @@ const MedicalCard = ({ clinic }) => {
           <strong>Phone:</strong> {clinic.phone_number || "N/A"}
         </p>
       </div>
-<Link
-  href={`/appointment?type=clinic&name=${encodeURIComponent(
-    clinic.clinic_name
-  )}`}
->
+<Link href={`/appointment?type=clinic&id=${clinic.clinic_id}&name=${encodeURIComponent(clinic.clinic_name)}`}>
   <button className="details-btn">Book Appointment</button>
 </Link>
     </div>

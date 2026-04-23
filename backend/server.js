@@ -27,8 +27,11 @@ app.use("/api", schoolRoutes);
 app.use("/api", profileRoutes);
 
 const PORT = 5000;
+app.use("/uploads", express.static("uploads"));
+
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
+
 
 module.exports = app;

@@ -24,11 +24,7 @@ const SchoolCard = ({ school }) => {
           {school.annual_fees ? `${school.annual_fees} EGP` : "N/A"}
         </p>
       </div>
-<Link
-  href={`/appointment?type=school&name=${encodeURIComponent(
-    school.school_name
-  )}`}
->
+<Link href={`/appointment?type=school&id=${school.school_id}&name=${encodeURIComponent(school.school_name)}`}>
   <button className="details-btn">Book Appointment</button>
 </Link>
     </div>
