@@ -18,6 +18,7 @@ export default function Appointment() {
   // State for form submission
   const [formData, setFormData] = useState({
     appointment_date: "",
+     appointment_type: "",
     appointment_time: "",
     type: "",
     notes: "",
@@ -36,7 +37,7 @@ useEffect(() => {
   if (nameParam) {
     setFormData((prev) => ({
       ...prev,
-      type:  nameParam,
+       appointment_type: nameParam,
     }));
   }
 }, [nameParam]);
@@ -82,16 +83,22 @@ useEffect(() => {
   // 3. Submit Appointment
 const handleSubmit = async (e) => {
   e.preventDefault();
+
+   console.log("FORM DATA 👉", formData);
+
   const token = localStorage.getItem("token");
   setLoading(true);
 
   let bodyData = {
     appointment_date: formData.appointment_date,
     appointment_time: formData.appointment_time,
+appointment_type: formData.appointment_type,
     notes: formData.notes,
     status: "pending",
     type: typeParam,
   };
+
+   console.log("BODY DATA 👉", bodyData);
 
  
   if (typeParam === "sport") {
@@ -103,8 +110,8 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/appointments/create", {
-      method: "POST",
+const res = await fetch("http://localhost:5000/api/appointments", {    
+    method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -188,13 +195,16 @@ const handleSubmit = async (e) => {
                   <label>Appointment Type</label>
                   <input
   type="text"
-  name="type"
-  value={formData.type}
+  name="appointment_type"
+  value={formData.appointment_type || ""}
+
   readOnly
   className="readonly-input"
   placeholder="Select Category"
 />
                 </div>
+
+                
               </div>
 
               {/* DATE AND TIME */}

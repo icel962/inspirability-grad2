@@ -58,6 +58,19 @@ export default function Navbar() {
     return "/profile";
   };
 
+  const getOrdersPath = () => {
+  if (role === "parent") return "/my-appointments";
+
+  if (
+    role === "school" ||
+    role === "clinic" ||
+    role === "sport"
+  )
+    return "/provider-appointments";
+
+  return "/"; // fallback
+};
+
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div
@@ -119,6 +132,12 @@ export default function Navbar() {
                     Profile
                   </Link>
                 </li>
+                {/* ✅ Orders dynamic */}
+                {isLoggedIn && (
+  <li className={isActive(getOrdersPath()) ? "active" : ""}>
+    <Link href={getOrdersPath()}>Orders</Link>
+  </li>
+)}
 
                 <li>
                   <button onClick={handleLogout} className="logout-btn-nav">

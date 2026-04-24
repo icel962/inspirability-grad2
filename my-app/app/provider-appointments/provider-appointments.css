@@ -1,0 +1,103 @@
+.provider-container {
+  padding: 40px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.title {
+  color: #fff;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.appointment-card {
+  background: #1c1f3a;
+  color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+.appointment-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-info p {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+/* STATUS COLORS */
+.status {
+  font-weight: bold;
+}
+
+.status.pending {
+  color: orange;
+}
+
+.status.approved {
+  color: limegreen;
+}
+
+.status.rejected {
+  color: red;
+}
+
+/* BUTTONS */
+.actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn.approve {
+  background: #28a745;
+  color: white;
+}
+
+.btn.approve:hover {
+  background: #218838;
+}
+
+.btn.reject {
+  background: #dc3545;
+  color: white;
+}
+
+.btn.reject:hover {
+  background: #c82333;
+}
+/* مهم علشان الأيقونة */
+.appointment-card {
+  position: relative;
+}
+
+/* 🗑️ أيقونة الحذف */
+.delete-icon {
+  position: absolute;
+  right: 15px;
+  top: 50px;
+  transform: translateY(-50%);
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 0.3s;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.2);
+}

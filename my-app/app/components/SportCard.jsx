@@ -4,6 +4,7 @@ import "../styles/school.css";
 const SportCard = ({ sport }) => {
   return (
     <div className="school-card">
+      
       <div className="card-header">
         <div className="logo-container">
           {sport.sport_center_image ? (
@@ -14,7 +15,9 @@ const SportCard = ({ sport }) => {
         </div>
 
         <h3 className="school-title">{sport.sport_center_name}</h3>
-        <p className="sport-subtitle">{sport.sport_center_type || "N/A"}</p>
+        <p className="sport-subtitle">
+          {sport.sport_center_type || "N/A"}
+        </p>
       </div>
 
       <div className="card-body">
@@ -25,13 +28,20 @@ const SportCard = ({ sport }) => {
         </div>
 
         <div className="card-actions">
-          <button className="btn secondary" type="button">View Details</button>
+          
+          <button className="btn secondary" type="button">
+            View Details
+          </button>
+
           <Link
-            className="action-link"
-            href={`/appointment?type=sport&id=${sport.sport_center_id}&name=${encodeURIComponent(sport.sport_center_name)}`}
+            href={`/appointment?type=sport&id=${sport.sport_center_id}&name=${encodeURIComponent(
+              sport.sport_center_name
+            )}`}
+            className="btn primary"
           >
-            <button className="btn primary" type="button">Book Appointment</button>
+            Book Appointment
           </Link>
+
         </div>
       </div>
     </div>
