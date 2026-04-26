@@ -6,10 +6,37 @@ import "./my-appointments.css";
 
 export default function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    phone: ""
+  });
+
+  // Fetch user profile data
+  const fetchUserData = async (token) => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/parents/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setUserData({
+        name: res.data.name || "",
+        email: res.data.email || "",
+        phone: res.data.tel_no || ""
+      });
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
       const token = localStorage.getItem("token");
+      
+      // Fetch user data first
+      await fetchUserData(token);
 
       const res = await axios.get(
   "http://localhost:5000/api/appointments/my",
@@ -59,13 +86,38 @@ export default function MyAppointments() {
 
         <div className="card-info">
           <p>
-            <strong>Date:</strong>{" "}
-            {new Date(a.appointment_date).toLocaleDateString()}
+            <strong>Full Name:</strong>{" "}
+            {userData.name || "N/A"}
           </p>
 
           <p>
-            <strong>Type:</strong>{" "}
-            {a.appointment_type || "N/A"}
+            <strong>Email Address:</strong>{" "}
+            {userData.email || "N/A"}
+          </p>
+
+          <p>
+            <strong>Phone Number:</strong>{" "}
+            {userData.phone || "N/A"}
+          </p>
+
+          <p>
+            <strong>Appointment Type:</strong>{" "}
+            {a.appointment_type || (a.type === "school" ? a.school_name : a.type === "sport" ? a.sport_center_name : a.type === "clinic" ? a.clinic_name : a.type) || "N/A"}
+          </p>
+
+          <p>
+            <strong>Preferred Date:</strong>{" "}
+            {a.appointment_date ? new Date(a.appointment_date).toLocaleDateString() : "N/A"}
+          </p>
+
+          <p>
+            <strong>Preferred Time:</strong>{" "}
+            {a.appointment_time || "N/A"}
+          </p>
+
+          <p>
+            <strong>Notes:</strong>{" "}
+            {a.notes || "None"}
           </p>
 
           <p>

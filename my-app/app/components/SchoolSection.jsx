@@ -63,7 +63,7 @@ const SchoolSection = () => {
       5,
     location: school.city || "N/A",
     phone: school.phone_number || "N/A",
-    appointmentHref: `/appointment?schoolId=${school.school_id}&schoolName=${encodeURIComponent(school.school_name || "")}`,
+    appointmentHref: `/appointment?type=school&id=${school.school_id}&name=${encodeURIComponent(school.school_name || "")}`,
   }));
 
   const filteredData = data.filter((item) => {

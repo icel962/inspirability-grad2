@@ -28,19 +28,18 @@ export default function Appointment() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const searchParams = useSearchParams();
-const typeParam = searchParams.get("type");
-const nameParam = searchParams.get("name");
-const idParam = searchParams.get("id");
+  const typeParam = searchParams.get("type");
+  const nameParam = searchParams.get("name") || searchParams.get("schoolName");
+  const idParam = searchParams.get("id") || searchParams.get("schoolId");
 
-
-useEffect(() => {
-  if (nameParam) {
-    setFormData((prev) => ({
-      ...prev,
-       appointment_type: nameParam,
-    }));
-  }
-}, [nameParam]);
+  useEffect(() => {
+    if (nameParam) {
+      setFormData((prev) => ({
+        ...prev,
+        appointment_type: nameParam,
+      }));
+    }
+  }, [nameParam]);
   // 1. Fetch User Profile Data on Mount
   useEffect(() => {
     const token = localStorage.getItem("token");
