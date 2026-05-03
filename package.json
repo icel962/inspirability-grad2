@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev": "powershell.exe -ExecutionPolicy Bypass -File .\\start-dev.ps1",
+    "backend": "npm --prefix backend start",
+    "frontend": "npm --prefix my-app run dev:next"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.3"
+  }
+}
