@@ -5,7 +5,12 @@ import Story from "./components/home/Story";
 import Contact from "./components/home/Contact";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { Poppins } from 'next/font/google';
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+});
 export default function HomePage() {
   return (
      <>

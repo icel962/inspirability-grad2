@@ -1,6 +1,11 @@
 import Link from "next/link";
 import "../../styles/categories.css";
+import { Poppins } from 'next/font/google';
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+});
 export default function Categories() {
   return (
     <section className="categories">

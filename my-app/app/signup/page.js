@@ -200,8 +200,7 @@ export default function Signup() {
     if (type === "select") {
       return (
         <div key={name} className="input-group">
-          <label>{placeholder}</label>
-          <select name={name} value={value} onChange={handleChange}>
+          <select className='radio-gender-btn' name={name} value={value} onChange={handleChange}>
             <option value="">Select {placeholder}</option>
             {options.map((opt) => (
               <option key={opt} value={opt}>
@@ -214,14 +213,12 @@ export default function Signup() {
     } else if (type === "file") {
       return (
         <div key={name} className="input-group">
-          <label>{placeholder}</label>
           <input type="file" name={name} onChange={handleChange} />
         </div>
       );
     } else {
       return (
         <div key={name} className="input-group">
-          <label>{placeholder}</label>
           <input
             type={type}
             name={name}

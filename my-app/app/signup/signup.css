@@ -194,6 +194,13 @@ button {
   outline: 3px solid #0a0f5c;
 }
 
+.radio-gender-btn {
+  background-color: white;
+  padding: 8px 12px;
+  color: #333;
+  border-radius: 8px;
+}
+
 /* GRADIENT OVERLAY 🔥 */
 .overlay {
   position: absolute;
@@ -205,6 +212,8 @@ button {
     transparent
   );
 }
+
+
 
 /* TEXT */
 .role-card span {

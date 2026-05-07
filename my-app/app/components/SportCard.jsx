@@ -29,9 +29,10 @@ const SportCard = ({ sport }) => {
 
         <div className="card-actions">
           
-          <button className="btn secondary" type="button">
-            View Details
-          </button>
+  <Link href={`/clubdetails?id=${sport.sport_center_id}`} className="btn secondary">
+  View Details
+    </Link>
+
 
           <Link
             href={`/appointment?type=sport&id=${sport.sport_center_id}&name=${encodeURIComponent(

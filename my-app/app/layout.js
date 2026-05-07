@@ -1,7 +1,12 @@
 import "./styles/globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { Poppins } from 'next/font/google';
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+});
 export const metadata = {
   title: "Inspirability",
   description: "Inspirability special needs support platform",

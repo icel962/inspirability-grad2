@@ -2,10 +2,43 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { removeExtraData } from "../utils/appointmentExtraStorage";
 import "./my-appointments.css";
+
+const getStoredAppointmentExtras = () => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    return JSON.parse(localStorage.getItem("appointments_extra")) || {};
+  } catch (error) {
+    console.error("Failed to read appointments_extra:", error);
+    return {};
+  }
+};
+
+const formatTime = (timeValue) => {
+  if (!timeValue) {
+    return "Time not set";
+  }
+
+  const [hoursString, minutes = "00"] = String(timeValue).split(":");
+  let hours = Number.parseInt(hoursString, 10);
+
+  if (Number.isNaN(hours)) {
+    return timeValue;
+  }
+
+  const period = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+
+  return `${hours}:${minutes} ${period}`;
+};
 
 export default function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
+  const [extraData, setExtraData] = useState({});
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -40,9 +73,9 @@ export default function MyAppointments() {
 
       const res = await axios.get(
   "http://localhost:5000/api/appointments/my",
-  {
-    headers: { Authorization: `Bearer ${token}` },
-  }
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
 );
 
       setAppointments(res.data);
@@ -52,8 +85,40 @@ export default function MyAppointments() {
   };
 
   useEffect(() => {
+    setExtraData(getStoredAppointmentExtras());
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    const syncExtraData = () => {
+      setExtraData(getStoredAppointmentExtras());
+    };
+
+    window.addEventListener("storage", syncExtraData);
+    window.addEventListener("appointment-extra-updated", syncExtraData);
+
+    return () => {
+      window.removeEventListener("storage", syncExtraData);
+      window.removeEventListener("appointment-extra-updated", syncExtraData);
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("Appointments:", appointments);
+    console.log("LocalStorage:", extraData);
+  }, [appointments, extraData]);
+
+  const mappedAppointments = appointments.map((appointment) => {
+    const extra = extraData[String(appointment.appointment_id)];
+    const preferredTime = extra?.preferred_time;
+    const notes = extra?.notes;
+
+    return {
+      ...appointment,
+      preferred_time: preferredTime || null,
+      notes: notes || null,
+    };
+  });
 
   const handleDelete = async (id) => {
   const token = localStorage.getItem("token");
@@ -68,6 +133,8 @@ export default function MyAppointments() {
       }
     );
 
+    removeExtraData(id);
+    setExtraData(getStoredAppointmentExtras());
     setAppointments(prev =>
       prev.filter(a => a.appointment_id !== id)
     );
@@ -81,7 +148,7 @@ export default function MyAppointments() {
   <div className="parent-container">
     <h2 className="title">My Appointments</h2>
 
-    {appointments.map((a) => (
+    {mappedAppointments.map((a) => (
       <div key={a.appointment_id} className="appointment-card">
 
         <div className="card-info">
@@ -112,12 +179,12 @@ export default function MyAppointments() {
 
           <p>
             <strong>Preferred Time:</strong>{" "}
-            {a.appointment_time || "N/A"}
+            {a.preferred_time ? formatTime(a.preferred_time) : "Time not selected"}
           </p>
 
           <p>
             <strong>Notes:</strong>{" "}
-            {a.notes || "None"}
+            {a.notes ? a.notes : "No notes available"}
           </p>
 
           <p>

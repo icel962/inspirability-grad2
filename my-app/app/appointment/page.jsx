@@ -1,11 +1,12 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
+import { saveExtraData } from "../utils/appointmentExtraStorage";
 import "./appointment.css";
 
-export default function Appointment() {
+function AppointmentContent() {
   const router = useRouter();
   
   // State for user data (read-only)
@@ -119,9 +120,17 @@ const res = await fetch("http://localhost:5000/api/appointments", {
     });
 
       if (res.ok) {
+        const responseData = await res.json();
+        saveExtraData(
+          responseData.id,
+          formData.appointment_time,
+          formData.notes
+        );
+
         alert("Success! Your appointment has been booked.");
         setFormData({
           appointment_date: "",
+          appointment_type: nameParam || "",
           appointment_time: "",
           type: "",
           notes: "",
@@ -258,5 +267,13 @@ const res = await fetch("http://localhost:5000/api/appointments", {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function Appointment() {
+  return (
+    <Suspense fallback={<div className="loading">Loading...</div>}>
+      <AppointmentContent />
+    </Suspense>
   );
 }
