@@ -2,31 +2,39 @@ const db = require("../db/db");
 
 // Get all sport centers
 exports.getAllSportCenters = (req, res) => {
-  const query = `
-    SELECT 
-      sport_center_id,
-      sport_center_name,
-      sport_center_type,
-      location,
-      phone_number,
-      email_address,
-      working_days_and_hours,
-      age,
-      staff_qualifications,
-      coach_certifications,
-      sports_type_offered,
-      private_sessions_or_group,
-      special_coach_availability,
-      adaptive_equipments,
-      social_media_links,
-      supported_conditions,
-      details,
-      more_info,
-      session_price_min,
-      session_price_max,
-      user_id
-    FROM sport_center
-  `;
+const query = `
+  SELECT 
+    s.sport_center_id,
+    s.sport_center_name,
+    s.sport_center_type,
+    s.location,
+    s.phone_number,
+    s.email_address,
+    s.working_days_and_hours,
+    s.age,
+    s.staff_qualifications,
+    s.coach_certifications,
+    s.sports_type_offered,
+    s.private_sessions_or_group,
+    s.special_coach_availability,
+    s.adaptive_equipments,
+    s.social_media_links,
+    s.supported_conditions,
+    s.details,
+    s.more_info,
+    s.session_price_min,
+    s.session_price_max,
+    s.user_id
+
+  FROM sport_center s
+
+  JOIN users u
+    ON s.user_id = u.user_id
+
+  WHERE
+    u.approval_status = 'approved'
+    AND u.payment_status = 'approved'
+`;
 
   db.query(query, (err, result) => {
     if (err) {
@@ -43,31 +51,39 @@ exports.getSportCenterById = (req, res) => {
   const { id } = req.params;
 
   const query = `
-    SELECT 
-      sport_center_id,
-      sport_center_name,
-      sport_center_type,
-      location,
-      phone_number,
-      email_address,
-      working_days_and_hours,
-      age,
-      staff_qualifications,
-      coach_certifications,
-      sports_type_offered,
-      private_sessions_or_group,
-      special_coach_availability,
-      adaptive_equipments,
-      social_media_links,
-      supported_conditions,
-      details,
-      more_info,
-      session_price_min,
-      session_price_max,
-      user_id
-    FROM sport_center
-    WHERE sport_center_id = ?
-  `;
+  SELECT 
+    s.sport_center_id,
+    s.sport_center_name,
+    s.sport_center_type,
+    s.location,
+    s.phone_number,
+    s.email_address,
+    s.working_days_and_hours,
+    s.age,
+    s.staff_qualifications,
+    s.coach_certifications,
+    s.sports_type_offered,
+    s.private_sessions_or_group,
+    s.special_coach_availability,
+    s.adaptive_equipments,
+    s.social_media_links,
+    s.supported_conditions,
+    s.details,
+    s.more_info,
+    s.session_price_min,
+    s.session_price_max,
+    s.user_id
+
+  FROM sport_center s
+
+  JOIN users u
+    ON s.user_id = u.user_id
+
+  WHERE 
+    s.sport_center_id = ?
+    AND u.approval_status = 'approved'
+    AND u.payment_status = 'approved'
+`;
 
   db.query(query, [id], (err, result) => {
     if (err) {

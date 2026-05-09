@@ -2,23 +2,31 @@ const db = require("../db/db");
 
 // Get all medical clinics
 exports.getAllMedicalClinics = (req, res) => {
-  const query = `
-    SELECT 
-      clinic_id,
-      clinic_name,
-      clinic_type,
-      specialized_therapists,
-      email,
-      phone_number,
-      location,
-      working_hours_and_days,
-      session_price_range,
-      certifications_availability,
-      specialization_type,
-      sliding_equipments,
-      user_id
-    FROM medical_clinic
-  `;
+const query = `
+  SELECT 
+    m.clinic_id,
+    m.clinic_name,
+    m.clinic_type,
+    m.specialized_therapists,
+    m.email,
+    m.phone_number,
+    m.location,
+    m.working_hours_and_days,
+    m.session_price_range,
+    m.certifications_availability,
+    m.specialization_type,
+    m.sliding_equipments,
+    m.user_id
+
+  FROM medical_clinic m
+
+  JOIN users u
+    ON m.user_id = u.user_id
+
+  WHERE
+    u.approval_status = 'approved'
+    AND u.payment_status = 'approved'
+`;
 
   db.query(query, (err, result) => {
     if (err) {
@@ -34,24 +42,32 @@ exports.getAllMedicalClinics = (req, res) => {
 exports.getMedicalClinicById = (req, res) => {
   const { id } = req.params;
 
-  const query = `
-    SELECT 
-      clinic_id,
-      clinic_name,
-      clinic_type,
-      specialized_therapists,
-      email,
-      phone_number,
-      location,
-      working_hours_and_days,
-      session_price_range,
-      certifications_availability,
-      specialization_type,
-      sliding_equipments,
-      user_id
-    FROM medical_clinic
-    WHERE clinic_id = ?
-  `;
+const query = `
+  SELECT 
+    m.clinic_id,
+    m.clinic_name,
+    m.clinic_type,
+    m.specialized_therapists,
+    m.email,
+    m.phone_number,
+    m.location,
+    m.working_hours_and_days,
+    m.session_price_range,
+    m.certifications_availability,
+    m.specialization_type,
+    m.sliding_equipments,
+    m.user_id
+
+  FROM medical_clinic m
+
+  JOIN users u
+    ON m.user_id = u.user_id
+
+  WHERE 
+    m.clinic_id = ?
+    AND u.approval_status = 'approved'
+    AND u.payment_status = 'approved'
+`;
 
   db.query(query, [id], (err, result) => {
     if (err) {

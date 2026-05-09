@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
@@ -8,6 +9,8 @@ const parentRoutes = require("./routes/parentRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const schoolRoutes = require("./routes/schoolRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 const app = express();
 
@@ -25,6 +28,8 @@ app.use("/api", parentRoutes);
 app.use("/api", appointmentRoutes);
 app.use("/api", schoolRoutes); 
 app.use("/api", profileRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api", chatRoutes);
 
 const PORT = 5000;
 app.use("/uploads", express.static("uploads"));

@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import NextImage from "next/image"; 
 import "./payment.css";
+import axios from "axios";
 
 export default function PaymentPage() {
   const [mounted, setMounted] = useState(false);
@@ -57,17 +58,38 @@ export default function PaymentPage() {
     setExpiry(value);
   };
 
-  const handlePay = async () => {
-    if (!token) return alert("⚠️ Please login to complete payment!");
-    if (method === 'card' && !agreeTerms) return alert("Please agree to the terms.");
-    
-    setLoading(true);
-    // Simulate backend processing
-    setTimeout(() => {
-        alert("✅ Payment Successful!");
-        setLoading(false);
-    }, 1500);
-  };
+const handlePay = async () => {
+  if (!token)
+    return alert("⚠️ Please login to complete payment!");
+
+  if (method === "card" && !agreeTerms)
+    return alert("Please agree to the terms.");
+
+  setLoading(true);
+
+  // simulate delay
+  setTimeout(async () => {
+    try {
+      await axios.put(
+        "http://localhost:5000/api/payment-request",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Payment sent for admin review ✅");
+
+    } catch (err) {
+      console.error(err);
+      alert("Payment request failed ❌");
+    }
+
+    setLoading(false);
+  }, 1500);
+};
 
   if (!mounted) return null;
 

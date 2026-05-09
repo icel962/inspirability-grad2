@@ -4,17 +4,25 @@ const db = require("../db/db");
 // Get all schools with image
 exports.getSchools = (req, res) => {
   const query = `
-    SELECT 
-      s.*,
-      m.media_id,
-      m.file_name,
-      m.media_type,
-      m.file_blob
-    FROM school s
-    LEFT JOIN media m 
-      ON s.school_id = m.entity_id 
-      AND m.entity_type = 'school'
-  `;
+  SELECT 
+    s.*,
+    m.media_id,
+    m.file_name,
+    m.media_type,
+    m.file_blob
+  FROM school s
+
+  JOIN users u
+    ON s.user_id = u.user_id
+
+  LEFT JOIN media m 
+    ON s.school_id = m.entity_id 
+    AND m.entity_type = 'school'
+
+  WHERE
+    u.approval_status = 'approved'
+    AND u.payment_status = 'approved'
+`;
 
   db.query(query, (err, result) => {
     if (err) return res.status(500).json(err);
@@ -35,18 +43,27 @@ exports.getSchools = (req, res) => {
 exports.getSchoolById = (req, res) => {
   const { id } = req.params;
   const query = `
-    SELECT 
-      s.*,
-      m.media_id,
-      m.file_name,
-      m.media_type,
-      m.file_blob
-    FROM school s
-    LEFT JOIN media m 
-      ON s.school_id = m.entity_id 
-      AND m.entity_type = 'school'
-    WHERE s.school_id = ?
-  `;
+  SELECT 
+    s.*,
+    m.media_id,
+    m.file_name,
+    m.media_type,
+    m.file_blob
+
+  FROM school s
+
+  JOIN users u
+    ON s.user_id = u.user_id
+
+  LEFT JOIN media m 
+    ON s.school_id = m.entity_id 
+    AND m.entity_type = 'school'
+
+  WHERE 
+    s.school_id = ?
+    AND u.approval_status = 'approved'
+    AND u.payment_status = 'approved'
+`;
 
   db.query(query, [id], (err, result) => {
     if (err) return res.status(500).json(err);

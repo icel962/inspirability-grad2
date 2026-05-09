@@ -50,11 +50,11 @@ exports.signup = [
       }
 
       // ================= ADMIN =================
-else if (role === "admin") {
+if (role === "admin") {
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
   db.query(
-    "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+    "INSERT INTO users (email, password, role, approval_status, payment_status) VALUES (?, ?, ?, 'approved', 'approved')",
     [data.email, hashedPassword, role],
     (err, result) => {
       if (err) {
@@ -72,11 +72,31 @@ else if (role === "admin") {
   return; // important to stop further execution
 }
 
+let approvalStatus = "approved";
+let paymentStatus = "approved";
+
+// providers only
+if (
+  role === "school" ||
+  role === "clinic" ||
+  role === "sport"
+) {
+  approvalStatus = "pending";
+  paymentStatus = "unpaid";
+}
       const hashedPassword = await bcrypt.hash(data.password, 10);
 
       db.query(
-        "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-        [data.email, hashedPassword, role],
+  `INSERT INTO users 
+  (email, password, role, approval_status, payment_status)
+  VALUES (?, ?, ?, ?, ?)`,
+  [
+    data.email,
+    hashedPassword,
+    role,
+    approvalStatus,
+    paymentStatus
+  ],
         (err, result) => {
           if (err) {
             console.error("USER INSERT ERROR:", err);
@@ -319,6 +339,29 @@ exports.login = (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch)
         return res.status(401).json({ message: "Invalid password" });
+      if (user.approval_status === "pending") {
+  return res.status(403).json({
+    message: "Your account is under review by admin",
+  });
+}
+
+if (user.approval_status === "rejected") {
+  return res.status(403).json({
+    message: "Your account has been rejected",
+  });
+}
+
+if (
+  (user.role === "school" ||
+    user.role === "clinic" ||
+    user.role === "sport") &&
+  user.payment_status === "rejected"
+) {
+  return res.status(403).json({
+    message: "Your payment was rejected",
+    paymentRejected: true,
+  });
+}
 
       const token = jwt.sign(
         { id: user.user_id, role: user.role },
@@ -326,11 +369,84 @@ exports.login = (req, res) => {
         { expiresIn: "24h" },
       );
 
-      res.json({
-        message: "Login successful",
-        token,
-        user,
-      });
+res.json({
+  message: "Login successful",
+  token,
+
+  user: {
+    ...user,
+
+    showApprovalMessage:
+      user.approval_status === "approved" &&
+      !user.approval_message_seen,
+
+    showPaymentMessage:
+      user.payment_status === "approved" &&
+      !user.payment_message_seen,
+  },
+});
     },
+  );
+};
+
+
+
+exports.sendPaymentRequest = (req, res) => {
+  const user_id = req.user.id;
+
+  db.query(
+    `UPDATE users 
+     SET payment_status = 'pending'
+     WHERE user_id = ?`,
+    [user_id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({
+          message: "DB error",
+        });
+      }
+
+      res.json({
+        message: "Payment request sent",
+      });
+    }
+  );
+};
+
+exports.hideApprovalMessage = (req, res) => {
+
+  db.query(
+    `UPDATE users
+     SET approval_message_seen = true
+     WHERE user_id = ?`,
+    [req.user.id],
+    (err) => {
+
+      if (err)
+        return res.status(500).json(err);
+
+      res.json({
+        message: "done",
+      });
+    }
+  );
+};
+
+exports.hidePaymentMessage = (req, res) => {
+
+  db.query(
+    `UPDATE users
+     SET payment_message_seen = true
+     WHERE user_id = ?`,
+    [req.user.id],
+    (err) => {
+
+      if (err)
+        return res.status(500).json(err);
+
+      res.json({
+        message: "done",
+      });
+    }
   );
 };

@@ -133,9 +133,16 @@ export default function Navbar() {
                   </Link>
                 </li>
                 {/* ✅ Orders dynamic */}
-                {isLoggedIn && (
+{isLoggedIn && (
   <li className={isActive(getOrdersPath()) ? "active" : ""}>
     <Link href={getOrdersPath()}>Orders</Link>
+  </li>
+)}
+
+{/* ✅ Admin Requests */}
+{role === "admin" && (
+  <li className={isActive("/requests") ? "active" : ""}>
+    <Link href="/requests">Requests</Link>
   </li>
 )}
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authController = require("../controllers/authController");
 const appointmentController = require("../controllers/appointmentController");
 const { authenticate } = require("../controllers/authController");
 
@@ -26,6 +27,11 @@ router.delete(
   "/appointments/provider/:id",
   authenticate,
   appointmentController.deleteProviderAppointment
+);
+router.put(
+  "/payment-request",
+  authenticate,
+  authController.sendPaymentRequest
 );
 
 module.exports = router;

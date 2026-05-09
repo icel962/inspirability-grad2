@@ -2,6 +2,7 @@ import "./styles/globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Poppins } from 'next/font/google';
+import ChatBot from "./components/ChatBot";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         <Navbar />
         <main className="page-animation">{children}</main>
         <Footer />
+        <ChatBot />
       </body>
     </html>
   );
