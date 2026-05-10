@@ -856,3 +856,242 @@ input, select, textarea {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* ========================= */
+/* CONTACT NAME CELL FIX     */
+/* ========================= */
+
+.contact-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.contact-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+  display: block;
+}
+
+.contact-name-text {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.contact-name {
+  display: block;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  max-width: 260px;
+  color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+  .contact-name {
+    font-size: 0.95rem !important;
+    max-width: 180px;
+  }
+}
+
+.form-error {
+  color: #d63b3b;
+  font-size: 13px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* ========================================================= */
+/* CONTACTS SECTION: HEIGHT FIX + INTERNAL SCROLL            */
+/* ========================================================= */
+
+/* Each panel sits at its own natural height — form panel      */
+/* dictates visual size; list panel is capped to match it.    */
+.management-layout {
+  align-items: start !important;
+}
+
+.management-layout .panel {
+  height: auto !important;
+}
+
+/* List panel: fixed max-height so it never outgrows the form */
+.list-panel {
+  max-height: 680px;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Table wrap: fills remaining height and scrolls both axes   */
+.list-panel .table-wrap {
+  flex: 1 !important;
+  min-height: 0 !important;      /* lets flex child shrink below content height */
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  scroll-behavior: smooth;
+  border: 1px solid rgba(2,2,95,0.1);
+  border-radius: 10px;
+}
+
+/* Vertical scrollbar */
+.list-panel .table-wrap::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+}
+
+.list-panel .table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(2, 2, 95, 0.18);
+  border-radius: 10px;
+}
+
+.list-panel .table-wrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(2, 2, 95, 0.35);
+}
+
+.list-panel .table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ========================================================= */
+/* PHOTO UPLOAD FIELD                                         */
+/* ========================================================= */
+
+.photo-upload-field {
+  grid-column: 1 / -1;
+}
+
+.photo-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 16px;
+  border: 1.5px dashed rgba(2, 2, 95, 0.22);
+  border-radius: 14px;
+  cursor: pointer;
+  background: #fafbff;
+  transition: border-color 0.2s, background 0.2s;
+  margin-top: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.photo-upload-label:hover {
+  border-color: rgba(2, 2, 95, 0.42);
+  background: #f0f3ff;
+}
+
+.photo-upload-preview {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(2, 2, 95, 0.12);
+  display: block;
+}
+
+.photo-upload-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.photo-upload-meta strong {
+  display: block;
+  font-size: 14px;
+  color: #02025f;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.photo-upload-meta span {
+  font-size: 12px;
+  color: #6b7280;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-upload-cta {
+  background: rgba(2, 2, 95, 0.08);
+  color: #02025f;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ================================================== */
+/* FIX: STATUS badge and Delete button alignment      */
+/* ================================================== */
+
+/* All cells: vertically center content so single-line cells
+   (STATUS, ACTIONS) align with multi-line cells in the same row */
+.contact-table td {
+  vertical-align: middle !important;
+}
+
+/* Status badge: inline-flex removes the baseline gap that a plain
+   inline <span> with padding creates, locking it to the midline */
+.contact-table .status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+}
+
+/* Delete button: collapse any inherited line-height offset */
+.contact-table .btn.delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+}
+
+/* ================================================== */
+/* FIX: Continuous row divider lines                  */
+/* ================================================== */
+
+/* 1. Remove per-cell borders — they render with micro-gaps
+      in browsers when a cell uses a non-table-cell display. */
+.contact-table td {
+  border-bottom: none !important;
+}
+
+/* 2. Apply one continuous border on the <tr> itself.
+      With border-collapse: collapse this spans all columns
+      edge-to-edge with no gaps. */
+.contact-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* 3. Restore proper table-cell outer display on the actions
+      cell so it participates in the table layout model the
+      same way every other <td> does. */
+.contact-table .actions-cell {
+  display: table-cell !important;
+  vertical-align: middle;
+}
+
+/* 4. Inner wrapper carries the flex layout, keeping button
+      alignment without touching the cell's display type. */
+.actions-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

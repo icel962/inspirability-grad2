@@ -98,7 +98,7 @@ export default function HomePage() {
       </section>
 
       <section className="story">
-        <h2 className="zeft-text">Take a turn towards our inspiring story</h2>
+        <h2 className="zeft-text story-title">Take a turn towards our inspiring story</h2>
 
         <div className="story-grid">
           <div className="story-card">

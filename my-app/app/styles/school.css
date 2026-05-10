@@ -121,6 +121,24 @@
   object-fit: contain;
 }
 
+.profile-photo-container {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  background: #eee;
+  flex-shrink: 0;
+  margin: 0 auto;
+}
+
 .school-title {
   color: #0a0e31;
   margin-bottom: 10px;
@@ -668,6 +686,7 @@
 
 .sport-section .action-link {
   flex: 1;
+  display: flex;
   text-decoration: none;
 }
 
@@ -678,8 +697,12 @@
   padding: 9px 10px;
   border-radius: 10px;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
   font-weight: 700;
+  line-height: 1.2;
   cursor: pointer;
 }
 
@@ -757,4 +780,16 @@
 
 .details-btn:hover {
   background: #000;
+}
+
+/* Responsive Profile Photo Styles */
+@media (max-width: 600px) {
+  .profile-photo {
+    width: 72px;
+    height: 72px;
+  }
+
+  .profile-photo-container {
+    margin-bottom: 10px;
+  }
 }

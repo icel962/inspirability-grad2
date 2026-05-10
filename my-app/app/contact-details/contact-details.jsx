@@ -77,7 +77,13 @@ export default async function ContactDetailsPage({ searchParams }) {
 
                     <div className="contact-profile-card__avatar">
                       <img
-                        src={contact.image ? `/${contact.image}` : fallbackImage}
+                        src={
+                          contact.image?.startsWith("data:")
+                            ? contact.image
+                            : contact.image
+                              ? `/${contact.image}`
+                              : fallbackImage
+                        }
                         alt={contact.name}
                       />
                     </div>

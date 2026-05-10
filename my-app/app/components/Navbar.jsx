@@ -18,8 +18,12 @@ export default function Navbar() {
   useEffect(() => {
     setMounted(true);
 
-    const token = localStorage.getItem("token");
+    const token    = localStorage.getItem("token");
     const userRole = localStorage.getItem("role");
+    const user     = JSON.parse(localStorage.getItem("user") || "null");
+
+    console.log("Logged in user:", user);
+    console.log("User role:", userRole);
 
     setIsLoggedIn(!!token);
     setRole(userRole);
@@ -132,12 +136,12 @@ export default function Navbar() {
                     Profile
                   </Link>
                 </li>
-                {/* ✅ Orders dynamic */}
-                {isLoggedIn && (
-  <li className={isActive(getOrdersPath()) ? "active" : ""}>
-    <Link href={getOrdersPath()}>Orders</Link>
-  </li>
-)}
+                {/* ✅ Orders dynamic — hidden for admin */}
+                {isLoggedIn && role !== "admin" && (
+                  <li className={isActive(getOrdersPath()) ? "active" : ""}>
+                    <Link href={getOrdersPath()}>Orders</Link>
+                  </li>
+                )}
 
                 <li>
                   <button onClick={handleLogout} className="logout-btn-nav">

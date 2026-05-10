@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import NextImage from "next/image"; 
+import CreditCardValidator from "../lib/creditCardValidator";
 import "./payment.css";
 
 export default function PaymentPage() {
@@ -23,6 +24,8 @@ export default function PaymentPage() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [saveCard, setSaveCard] = useState(false);
   const [selectedCard, setSelectedCard] = useState("visa");
+  const [touched, setTouched] = useState({});
+  const [notice, setNotice] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -43,21 +46,113 @@ export default function PaymentPage() {
 
   // Format Card Number (adds spaces every 4 digits)
   const handleCardNumberChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    value = value.match(/.{1,4}/g)?.join(" ") || "";
-    setCardNumber(value);
+    const formattedValue = CreditCardValidator.formatCardNumber(e.target.value).slice(0, 23);
+    const detectedType = CreditCardValidator.detectCardType(formattedValue);
+
+    setCardNumber(formattedValue);
+    setTouched((currentTouched) => ({ ...currentTouched, cardNumber: true }));
+
+    if (detectedType.includes("visa")) setSelectedCard("visa");
+    if (detectedType.includes("mastercard")) setSelectedCard("mastercard");
   };
 
   // Format Expiry (adds / automatically)
   const handleExpiryChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 2) {
-      value = value.substring(0, 2) + "/" + value.substring(2, 4);
-    }
-    setExpiry(value);
+    setExpiry(CreditCardValidator.formatExpiry(e.target.value));
+    setTouched((currentTouched) => ({ ...currentTouched, expiry: true }));
   };
 
+  const markTouched = (field) => {
+    setTouched((currentTouched) => ({ ...currentTouched, [field]: true }));
+  };
+
+  const validateCardDetails = () => {
+    const nextErrors = {};
+
+    if (!validation.fields.cardholderName.valid) nextErrors.cardName = validation.fields.cardholderName.message;
+    if (!validation.fields.cardNumber.valid) nextErrors.cardNumber = validation.fields.cardNumber.message;
+    if (!validation.fields.expiry.valid) nextErrors.expiry = validation.fields.expiry.message;
+    if (!validation.fields.cvv.valid) nextErrors.cvv = validation.fields.cvv.message;
+    if (!agreeTerms) nextErrors.agreeTerms = "Please agree to the terms.";
+
+    return nextErrors;
+  };
+
+  const showNotice = (variant, title, messages) => {
+    setNotice({
+      variant,
+      title,
+      messages: Array.isArray(messages) ? messages : [messages],
+    });
+  };
+
+  const alert = (message) => {
+    const messageText = String(message);
+
+    if (messageText.toLowerCase().includes("successful")) {
+      showNotice("success", "Payment successful", `Your ${plan} payment of $${amount} is complete.`);
+      return;
+    }
+
+    if (messageText.toLowerCase().includes("login")) {
+      showNotice("warning", "Login required", "Please login to complete payment.");
+      return;
+    }
+
+    showNotice("warning", "Payment notice", messageText.split("\n").filter(Boolean));
+  };
+
+  const validation = CreditCardValidator.validateAll({
+    cardNumber,
+    expiry,
+    cvv,
+    cardholderName: cardName,
+  });
+
+  const fieldErrors = {
+    cardName:
+      touched.cardName && !validation.fields.cardholderName.valid
+        ? validation.fields.cardholderName.message
+        : "",
+    cardNumber:
+      touched.cardNumber && !validation.fields.cardNumber.valid
+        ? validation.fields.cardNumber.message
+        : "",
+    expiry:
+      touched.expiry && !validation.fields.expiry.valid
+        ? validation.fields.expiry.message
+        : "",
+    cvv:
+      touched.cvv && !validation.fields.cvv.valid
+        ? validation.fields.cvv.message
+        : "",
+    agreeTerms:
+      touched.agreeTerms && !agreeTerms ? "Please agree to the terms." : "",
+  };
+
+  const isCardPaymentValid = validation.valid && agreeTerms;
+  const maskedCardNumber = CreditCardValidator.cleanCardNumber(cardNumber)
+    .replace(/\d(?=\d{4})/g, "*")
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
+  const maskedCvv = cvv ? "***" : "";
+
   const handlePay = async () => {
+    if (method === 'card') {
+      const nextErrors = validateCardDetails();
+
+      if (Object.keys(nextErrors).length > 0) {
+        setTouched({
+          cardName: true,
+          cardNumber: true,
+          expiry: true,
+          cvv: true,
+          agreeTerms: true,
+        });
+        return;
+      }
+    }
+
     if (!token) return alert("⚠️ Please login to complete payment!");
     if (method === 'card' && !agreeTerms) return alert("Please agree to the terms.");
     
@@ -115,10 +210,10 @@ export default function PaymentPage() {
                     <span>🏦 INSPIRABILITY BANK</span>
                     <span>CREDIT</span>
                   </div>
-                  <h3 className="number">{cardNumber || "0000 0000 0000 0000"}</h3>
+                  <h3 className="number">{maskedCardNumber || "0000 0000 0000 0000"}</h3>
                   <div className="card-bottom">
                     <div><small>VALID THRU</small><p>{expiry || "MM/YY"}</p></div>
-                    <div><small>CVV</small><p>{cvv || "•••"}</p></div>
+                    <div><small>CVV</small><p>{maskedCvv || "***"}</p></div>
                   </div>
                   <div className="card-name">{cardName || "YOUR NAME"}</div>
                   <div className="brand">{selectedCard.toUpperCase()}</div>
@@ -130,7 +225,19 @@ export default function PaymentPage() {
               <div className="card-form-side">
                 <div className="input-group">
                   <label>Cardholder Name</label>
-                  <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="Full Name" />
+                  <input
+                    type="text"
+                    value={cardName}
+                    onChange={(e) => {
+                      setCardName(e.target.value);
+                      markTouched("cardName");
+                    }}
+                    onBlur={() => markTouched("cardName")}
+                    placeholder="Full Name"
+                    className={fieldErrors.cardName ? "input-error" : ""}
+                    aria-invalid={Boolean(fieldErrors.cardName)}
+                  />
+                  {fieldErrors.cardName && <p className="field-error">{fieldErrors.cardName}</p>}
                   
                   <label>Card Number</label>
                   <input 
@@ -138,23 +245,64 @@ export default function PaymentPage() {
                     value={cardNumber} 
                     onChange={handleCardNumberChange} 
                     placeholder="0000 0000 0000 0000"
-                    maxLength={19}
+                    maxLength={23}
+                    inputMode="numeric"
+                    onBlur={() => markTouched("cardNumber")}
+                    className={fieldErrors.cardNumber ? "input-error" : ""}
+                    aria-invalid={Boolean(fieldErrors.cardNumber)}
                   />
+                  {fieldErrors.cardNumber && <p className="field-error">{fieldErrors.cardNumber}</p>}
 
                   <div className="input-row">
                     <div>
                       <label>Expiry</label>
-                      <input type="text" value={expiry} onChange={handleExpiryChange} placeholder="MM/YY" maxLength={5} />
+                      <input
+                        type="text"
+                        value={expiry}
+                        onChange={handleExpiryChange}
+                        placeholder="MM/YY"
+                        maxLength={5}
+                        inputMode="numeric"
+                        onBlur={() => markTouched("expiry")}
+                        className={fieldErrors.expiry ? "input-error" : ""}
+                        aria-invalid={Boolean(fieldErrors.expiry)}
+                      />
+                      {fieldErrors.expiry && <p className="field-error">{fieldErrors.expiry}</p>}
                     </div>
                     <div>
                       <label>CVV</label>
-                      <input type="text" value={cvv} onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))} placeholder="123" maxLength={4} />
+                      <input
+                        type="text"
+                        value={cvv}
+                        onChange={(e) => {
+                          setCvv(e.target.value.replace(/\D/g, "").slice(0, 3));
+                          markTouched("cvv");
+                        }}
+                        placeholder="123"
+                        maxLength={3}
+                        inputMode="numeric"
+                        onBlur={() => markTouched("cvv")}
+                        className={fieldErrors.cvv ? "input-error" : ""}
+                        aria-invalid={Boolean(fieldErrors.cvv)}
+                      />
+                      {fieldErrors.cvv && <p className="field-error">{fieldErrors.cvv}</p>}
                     </div>
                   </div>
                 </div>
 
                 <div className="checkbox-section">
-                  <label><input type="checkbox" checked={agreeTerms} onChange={(e) => setAgreeTerms(e.target.checked)} /> Agree to Terms</label>
+                  <label className={fieldErrors.agreeTerms ? "checkbox-error" : ""}>
+                    <input
+                      type="checkbox"
+                      checked={agreeTerms}
+                      onChange={(e) => {
+                        setAgreeTerms(e.target.checked);
+                        markTouched("agreeTerms");
+                      }}
+                    />
+                    Agree to Terms
+                  </label>
+                  {fieldErrors.agreeTerms && <p className="field-error checkbox-field-error">{fieldErrors.agreeTerms}</p>}
                   <label><input type="checkbox" checked={saveCard} onChange={(e) => setSaveCard(e.target.checked)} /> Save card</label>
                 </div>
               </div>
@@ -166,7 +314,7 @@ export default function PaymentPage() {
                   <div className="item"><span>Duration:</span> <strong>{duration}</strong></div>
                   <hr />
                   <div className="total"><span>Total:</span> <strong>${amount}</strong></div>
-                  <button className="pay-btn" onClick={handlePay} disabled={loading}>
+                  <button className="pay-btn" onClick={handlePay} disabled={loading || !isCardPaymentValid}>
                     {loading ? "Processing..." : `PAY $${amount} NOW`}
                   </button>
                 </div>
@@ -195,6 +343,37 @@ export default function PaymentPage() {
           </div>
         )}
       </section>
+      {notice && (
+        <div className="payment-modal-overlay">
+          <div
+            className={`payment-modal payment-modal--${notice.variant}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="payment-modal-title"
+          >
+            <button className="payment-modal-close" onClick={() => setNotice(null)} aria-label="Close message">
+              X
+            </button>
+            <div className="payment-modal-mark" aria-hidden="true">
+              {notice.variant === "success" ? "OK" : "!"}
+            </div>
+            <p className="payment-modal-kicker">Inspirability checkout</p>
+            <h3 id="payment-modal-title">{notice.title}</h3>
+            {notice.messages.length > 1 ? (
+              <ul className="payment-modal-list">
+                {notice.messages.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="payment-modal-message">{notice.messages[0]}</p>
+            )}
+            <button className="payment-modal-action" onClick={() => setNotice(null)}>
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

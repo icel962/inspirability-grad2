@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { apiUrl } from "@/app/lib/api";
 
-export default function ProfileHeader({ user, role, setProfile }) {
+export default function ProfileHeader({ user, role, setProfile, serviceImage, onEditClick }) {
   const [uploading, setUploading] = useState(false);
 
   const handleImageChange = async (e) => {
@@ -51,9 +51,10 @@ export default function ProfileHeader({ user, role, setProfile }) {
           src={
             user.image
               ? apiUrl(`/uploads/${user.image}`)
-              : "/images/profile.png"
+              : serviceImage || "/images/default-profile.svg"
           }
           alt="profile"
+          onError={(e) => { e.currentTarget.src = "/images/default-profile.svg"; }}
         />
 
         <label className="upload-btn">
@@ -71,6 +72,12 @@ export default function ProfileHeader({ user, role, setProfile }) {
       </h3>
 
       <span>{role.toUpperCase()} ACCOUNT</span>
+
+      {onEditClick && (
+        <button className="edit-profile-btn" onClick={onEditClick}>
+          Edit Profile
+        </button>
+      )}
     </div>
   );
 }

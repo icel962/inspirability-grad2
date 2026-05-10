@@ -39,8 +39,8 @@ export default function ClubPage() {
                 <img src="/coach3.jpg" />
               </div>
 
-              <Link href="/appointment" className="appointment">
-                Make Appointment
+              <Link href="/appointment?type=sport&name=Ahly%20Club" className="appointment">
+                Make an Appointment
               </Link>
             </div>
 
@@ -51,11 +51,21 @@ export default function ClubPage() {
 
             <h2>Ahly contact media</h2>
 
-            <button className="btn whatsapp">Whats app</button>
-            <button className="btn facebook">Facebook</button>
-            <button className="btn call">Call</button>
-            <button className="btn instagram">Instagram</button>
-            <button className="btn feedback">Add Feedback</button>
+            <a className="btn whatsapp" href="https://wa.me/201000000000" target="_blank" rel="noreferrer">
+              Whats app
+            </a>
+            <a className="btn facebook" href="https://www.facebook.com/alahly" target="_blank" rel="noreferrer">
+              Facebook
+            </a>
+            <a className="btn call" href="tel:+201000000000">
+              Call
+            </a>
+            <a className="btn instagram" href="https://www.instagram.com/alahly/" target="_blank" rel="noreferrer">
+              Instagram
+            </a>
+            <Link className="btn feedback" href="/feedback">
+              Add Feedback
+            </Link>
 
           </div>
 

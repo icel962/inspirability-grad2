@@ -34,26 +34,11 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("role", data.user.role);
 
-      // 🔥 redirect حسب الرول من الباك
-      switch (data.user.role) {
-        case "parent":
-          router.replace("/home");
-          break;
-        case "admin":
-          router.replace("/admin");
-          break;
-        case "clinic":
-          router.replace("/medical");
-          break;
-        case "sport":
-          router.replace("/sport");
-          break;
-        case "school":
-          router.replace("/school");
-          break;
-        default:
-          router.replace("/login");
-      }
+      console.log("Logged in user:", data.user);
+      console.log("User role:", data.user?.role);
+      console.log("Redirecting to home page");
+
+      router.replace("/");
     } catch (err) {
       console.error(err);
       alert("Server error");

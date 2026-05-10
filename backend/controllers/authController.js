@@ -89,6 +89,10 @@ else if (role === "admin") {
           const fileNames =
             files.map((file) => file.filename).join(",") || null;
 
+          // Primary logo/profile image (sent as "providerLogo" from the media step)
+          const logoFile     = files.find((f) => f.fieldname === "providerLogo");
+          const logoFilename = logoFile ? logoFile.filename : null;
+
           // ================= SCHOOL =================
           if (role === "school") {
             const sql = `
@@ -146,6 +150,14 @@ else if (role === "admin") {
                 console.error("SCHOOL INSERT ERROR:", err);
                 return res.status(500).json(err);
               }
+              // Persist logo to users.image so it shows on the profile header
+              if (logoFilename) {
+                db.query(
+                  "UPDATE users SET image = ? WHERE user_id = ?",
+                  [logoFilename, userId],
+                  (uErr) => { if (uErr) console.warn("Could not save school logo to users.image:", uErr.message); }
+                );
+              }
               return res.json({ message: "School registered" });
             });
           }
@@ -188,6 +200,14 @@ else if (role === "admin") {
               if (err) {
                 console.error("CLINIC INSERT ERROR:", err);
                 return res.status(500).json(err);
+              }
+              // Persist logo to users.image so it shows on the profile header
+              if (logoFilename) {
+                db.query(
+                  "UPDATE users SET image = ? WHERE user_id = ?",
+                  [logoFilename, userId],
+                  (uErr) => { if (uErr) console.warn("Could not save clinic logo to users.image:", uErr.message); }
+                );
               }
               return res.json({ message: "Clinic registered" });
             });
@@ -248,6 +268,14 @@ else if (role === "admin") {
                 console.error("SPORT INSERT ERROR:", err);
                 return res.status(500).json(err);
               }
+              // Persist logo to users.image so it shows on the profile header
+              if (logoFilename) {
+                db.query(
+                  "UPDATE users SET image = ? WHERE user_id = ?",
+                  [logoFilename, userId],
+                  (uErr) => { if (uErr) console.warn("Could not save sport logo to users.image:", uErr.message); }
+                );
+              }
               return res.json({ message: "Sport center registered" });
             });
           }
@@ -306,31 +334,35 @@ else if (role === "admin") {
 exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  db.query(
-    "SELECT * FROM users WHERE email = ?",
-    [email],
-    async (err, result) => {
-      if (err) return res.status(500).json(err);
-      if (result.length === 0)
-        return res.status(401).json({ message: "User not found" });
+  const loginQuery = `
+    SELECT u.user_id, u.email, u.password, u.role,
+           p.username, p.tel_no, p.name AS parent_name
+    FROM users u
+    LEFT JOIN parent p ON u.user_id = p.user_id
+    WHERE u.email = ?
+  `;
 
-      const user = result[0];
+  db.query(loginQuery, [email], async (err, result) => {
+    if (err) return res.status(500).json(err);
+    if (result.length === 0)
+      return res.status(401).json({ message: "User not found" });
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch)
-        return res.status(401).json({ message: "Invalid password" });
+    const user = result[0];
 
-      const token = jwt.sign(
-        { id: user.user_id, role: user.role },
-        JWT_SECRET,
-        { expiresIn: "24h" },
-      );
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid password" });
 
-      res.json({
-        message: "Login successful",
-        token,
-        user,
-      });
-    },
-  );
+    const token = jwt.sign(
+      { id: user.user_id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "24h" },
+    );
+
+    res.json({
+      message: "Login successful",
+      token,
+      user,
+    });
+  });
 };

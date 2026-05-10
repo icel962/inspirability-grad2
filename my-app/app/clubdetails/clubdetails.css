@@ -70,6 +70,9 @@
 
 /* BUTTON */
 .appointment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 20px;
   background: #020b4a;
   color: white;
@@ -78,6 +81,9 @@
   border: none;
   cursor: pointer;
   transition: 0.3s;
+  text-decoration: none;
+  font-weight: 700;
+  width: fit-content;
 }
 
 .appointment:hover {
@@ -100,12 +106,17 @@
 
 /* BUTTONS */
 .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 15px;
   border-radius: 20px;
   border: none;
   cursor: pointer;
   font-size: 16px;
   transition: 0.3s;
+  text-decoration: none;
+  color: #071032;
 }
 
 /* COLORS */
@@ -135,4 +146,44 @@
 /* HOVER */
 .btn:hover {
   transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+  .club {
+    padding: 24px 18px;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+    padding-top: 30px;
+  }
+
+  .left {
+    align-items: flex-start;
+  }
+
+  .appointment,
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .left {
+    flex-direction: column;
+  }
+
+  .details h1 {
+    font-size: 32px;
+  }
+
+  .coach {
+    flex-wrap: wrap;
+  }
 }

@@ -19,6 +19,12 @@ const defaultAgeOptions = [
   { value: "Adults", label: "Adults (18+)" },
 ];
 
+const defaultReviewOptions = [
+  { value: "5", label: "5 stars" },
+  { value: "4", label: "4 stars & up" },
+  { value: "3", label: "3 stars & up" },
+];
+
 const FilterBar = ({
   search,
   setSearch,
@@ -28,6 +34,7 @@ const FilterBar = ({
   typeOptions = defaultTypeOptions,
   diagnosisOptions = defaultDiagnosisOptions,
   ageOptions = defaultAgeOptions,
+  reviewOptions = defaultReviewOptions,
   budgetMax = 900,
   distanceMax = 35,
   variant = "default",
@@ -123,9 +130,11 @@ const FilterBar = ({
                 onChange={(event) => setFilters({ ...filters, review: event.target.value })}
               >
                 <option value="all">All ratings</option>
-                <option value="5">5 stars</option>
-                <option value="4">4 stars & up</option>
-                <option value="3">3 stars & up</option>
+                {reviewOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -278,9 +287,11 @@ const FilterBar = ({
             onChange={(event) => setFilters({ ...filters, review: event.target.value })}
           >
             <option value="all">All ratings</option>
-            <option value="5">5 stars</option>
-            <option value="4">4 stars & up</option>
-            <option value="3">3 stars & up</option>
+            {reviewOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>

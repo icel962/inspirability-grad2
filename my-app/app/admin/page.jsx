@@ -2,7 +2,7 @@
 import "./admin.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Chart as ChartJS,
   LineElement,
@@ -12,16 +12,129 @@ import {
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
+import { contacts as staticContacts } from "../contact-details/contacts-data";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale);
-import { useEffect } from "react";
 
+
+// Maps admin category label → specialty key used by the Contacts page filter
+const CATEGORY_TO_SPECIALTY = {
+  Doctor: "medical",
+  "Private Doctor": "medical",
+  Therapist: "therapy",
+  "Private Therapist": "therapy",
+  Teacher: "education",
+  "Private Teacher": "education",
+  Coach: "sports",
+  "Private Trainer": "sports",
+};
+
+const EMPTY_FORM = {
+  name: "", category: "", specialization: "", phone: "",
+  email: "", location: "", availability: "", status: "Available",
+  budget: "", rating: "", image: "", description: "",
+};
 
 export default function Dashboard() {
+  useEffect(() => { drawChart(); }, []);
 
+  const [form, setForm]                       = useState(EMPTY_FORM);
+  const [formError, setFormError]             = useState("");
+  const [adminContacts, setAdminContacts]     = useState([]);
+  const [hiddenStaticIds, setHiddenStaticIds] = useState(new Set());
+  const [photoFile, setPhotoFile]             = useState(null);
+  const [photoPreview, setPhotoPreview]       = useState(null);
+
+  // Load from localStorage once on mount
   useEffect(() => {
-    drawChart();
+    const storedContacts = JSON.parse(localStorage.getItem("contactsData") || "[]");
+    console.log("Admin static contacts:", staticContacts);
+    console.log("Admin stored contacts:", storedContacts);
+    setAdminContacts(storedContacts);
   }, []);
+
+  // allContacts is always derived — never stored in state
+  const allContacts = useMemo(() => {
+    const visibleStatic = staticContacts.filter(
+      (c) => !hiddenStaticIds.has(String(c.id))
+    );
+    const merged = [...visibleStatic, ...adminContacts];
+    console.log("Admin rendered contacts:", merged);
+    return merged;
+  }, [hiddenStaticIds, adminContacts]);
+
+  const storedIds = useMemo(
+    () => new Set(adminContacts.map((c) => String(c.id))),
+    [adminContacts]
+  );
+
+  const handleField = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhotoPreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddContact = () => {
+    if (!form.name.trim())  { setFormError("Name is required.");     return; }
+    if (!form.category)     { setFormError("Category is required."); return; }
+    setFormError("");
+
+    const budgetRaw  = form.budget.trim();
+    const budgetValue = budgetRaw
+      ? (budgetRaw.toLowerCase().includes("egp") ? budgetRaw : `EGP ${budgetRaw} / session`)
+      : "EGP 0 / session";
+
+    const newContact = {
+      id:             String(Date.now()),
+      name:           form.name.trim(),
+      role:           form.specialization.trim() || form.category,
+      category:       form.category,
+      specialty:      CATEGORY_TO_SPECIALTY[form.category] || "education",
+      specialization: form.specialization.trim(),
+      budgetValue,
+      budgetLabel:    "Standard",
+      review:         Number(form.rating) || 0,
+      reviewLabel:    `${form.rating || 0} rating`,
+      reviewsCount:   0,
+      status:         form.status || "Available",
+      phone:          form.phone.trim(),
+      email:          form.email.trim(),
+      location:       form.location.trim(),
+      availability:   form.availability.trim(),
+      description:    form.description.trim(),
+      image:          photoPreview || form.image.trim() || "images/default-profile.svg",
+      distanceKm:     15,   // default distance for the Contacts page filter
+    };
+
+    const updated = [...adminContacts, newContact];
+    localStorage.setItem("contactsData", JSON.stringify(updated));
+    setAdminContacts(updated);
+    setForm(EMPTY_FORM);
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    console.log("Contact saved:", newContact);
+    console.log("All saved contacts:", updated);
+  };
+
+  const handleDelete = (id) => {
+    if (storedIds.has(String(id))) {
+      // localStorage contact — remove permanently
+      const updated = adminContacts.filter((c) => c.id !== id);
+      localStorage.setItem("contactsData", JSON.stringify(updated));
+      setAdminContacts(updated);
+    } else {
+      // Static contact — hide from view (frontend-only)
+      setHiddenStaticIds((prev) => new Set([...prev, String(id)]));
+    }
+  };
 
   return (
     <main className="dashboard-page">
@@ -222,30 +335,64 @@ export default function Dashboard() {
           New entries are saved locally and prepared for future parent-facing use.
         </p>
 
+        {formError && <p className="form-error">{formError}</p>}
+
         <div className="form-grid">
 
-          <input placeholder="Full Name" />
-          <select><option>Select category</option></select>
+          <input name="name" value={form.name} onChange={handleField} placeholder="Full Name" />
+          <select name="category" value={form.category} onChange={handleField}>
+            <option value="">Select category</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Private Doctor">Private Doctor</option>
+            <option value="Therapist">Therapist</option>
+            <option value="Private Therapist">Private Therapist</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Private Teacher">Private Teacher</option>
+            <option value="Coach">Coach</option>
+            <option value="Private Trainer">Private Trainer</option>
+          </select>
 
-          <input placeholder="Speech therapy, math" />
-          <input placeholder="0100 000 0000" />
+          <input name="specialization" value={form.specialization} onChange={handleField} placeholder="Speech therapy, math" />
+          <input name="phone" value={form.phone} onChange={handleField} placeholder="0100 000 0000" />
 
-          <input placeholder="name@example.com" />
-          <input placeholder="Cairo, Giza, Nasr City..." />
+          <input name="email" value={form.email} onChange={handleField} placeholder="name@example.com" />
+          <input name="location" value={form.location} onChange={handleField} placeholder="Cairo, Giza, Nasr City..." />
 
-          <input placeholder="Ages 4-12, home visit..." />
-          <select><option>Select status</option></select>
+          <input name="availability" value={form.availability} onChange={handleField} placeholder="Ages 4-12, home visit..." />
+          <select name="status" value={form.status} onChange={handleField}>
+            <option value="Available">Available</option>
+            <option value="Active">Active</option>
+            <option value="Online">Online</option>
+            <option value="Busy">Busy</option>
+          </select>
 
-          <input placeholder="450 EGP / session" />
-          <input placeholder="4.8" />
+          <input name="budget" value={form.budget} onChange={handleField} placeholder="450 EGP / session" />
+          <input name="rating" value={form.rating} onChange={handleField} placeholder="4.8" />
 
-          <input className="full" placeholder="https://example.com/profile.jpg" />
+          <div className="photo-upload-field">
+            <label className="photo-upload-label">
+              <img
+                src={photoPreview || "/images/default-profile.svg"}
+                alt="Contact photo preview"
+                className="photo-upload-preview"
+                onError={(e) => { e.currentTarget.src = "/images/default-profile.svg"; }}
+              />
+              <div className="photo-upload-meta">
+                <strong>Photo</strong>
+                <span>
+                  {photoFile ? photoFile.name : "Click to upload a photo (JPG, PNG, GIF)"}
+                </span>
+              </div>
+              <span className="photo-upload-cta">Browse</span>
+              <input type="file" hidden accept="image/*" onChange={handlePhotoSelect} />
+            </label>
+          </div>
 
-          <textarea className="full" placeholder="Short summary for parents viewing this contact later."></textarea>
+          <textarea name="description" value={form.description} onChange={handleField} className="full" placeholder="Short summary for parents viewing this contact later."></textarea>
 
         </div>
 
-        <button className="btn-primary">Add Contact</button>
+        <button className="btn-primary" onClick={handleAddContact}>Add Contact</button>
       </div>
 
       {/* RIGHT - TABLE */}
@@ -279,77 +426,63 @@ export default function Dashboard() {
     </thead>
 
     <tbody>
+      {allContacts.map((contact) => {
+        const displayName     = contact.name || contact.fullName || "Unnamed Contact";
+        const displayRating   = contact.review ? `${contact.review} / 5 rating` : contact.reviewLabel || "N/A";
+        const displayCategory = contact.category || "Uncategorized";
+        const displaySpecialty = contact.specialization || contact.role || "No specialty";
 
-      <tr>
-        <td>
-          <div className="contact-title">
-            <img src="/avatar.png" className="contact-avatar" />
-            <div>
-              <strong>Mariam Adel</strong>
-              <div className="sub">4.8 / 5 rating</div>
-            </div>
-          </div>
-        </td>
+        return (
+          <tr key={contact.id}>
+            <td>
+              <div className="contact-name-cell">
+                <img
+                  src={
+                    contact.image?.startsWith("data:")
+                      ? contact.image
+                      : contact.image
+                        ? `/${contact.image}`
+                        : "/images/default-profile.svg"
+                  }
+                  className="contact-avatar"
+                  alt={displayName}
+                  onError={(e) => { e.currentTarget.src = "/images/default-profile.svg"; }}
+                />
+                <div className="contact-name-text">
+                  <span className="contact-name">{displayName}</span>
+                  <div className="sub">{displayRating}</div>
+                </div>
+              </div>
+            </td>
 
-        <td>Private Teacher</td>
+            <td>{displayCategory}</td>
 
-        <td>
-          <strong>Special education and literacy support</strong>
-          <div className="sub">Ages 5-11</div>
-        </td>
+            <td>
+              <strong>{displaySpecialty}</strong>
+              {contact.availability && <div className="sub">{contact.availability}</div>}
+            </td>
 
-        <td>
-          <div>01012233445</div>
-          <div className="sub">mariam.adel@inspirability.com</div>
-        </td>
+            <td>
+              <div>{contact.phone || "—"}</div>
+              {contact.email && <div className="sub">{contact.email}</div>}
+            </td>
 
-        <td>Nasr City</td>
+            <td>{contact.location || "—"}</td>
 
-        <td>
-          <span className="status available">Available</span>
-        </td>
+            <td>
+              <span className={`status ${contact.status?.toLowerCase() === "available" ? "available" : "busy"}`}>
+                {contact.status || "—"}
+              </span>
+            </td>
 
-        <td className="actions-cell">
-          <button className="btn edit">Edit</button>
-          <button className="btn delete">Delete</button>
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          <div className="contact-title">
-            <img src="/avatar.png" className="contact-avatar" />
-            <div>
-              <strong>Omar Hany</strong>
-              <div className="sub">4.6 / 5 rating</div>
-            </div>
-          </div>
-        </td>
-
-        <td>Private Trainer</td>
-
-        <td>
-          <strong>Motor skills and adaptive fitness</strong>
-          <div className="sub">Ages 6-15</div>
-        </td>
-
-        <td>
-          <div>01017778899</div>
-          <div className="sub">omar.hany@inspirability.com</div>
-        </td>
-
-        <td>Maadi</td>
-
-        <td>
-          <span className="status busy">Busy</span>
-        </td>
-
-        <td className="actions-cell">
-          <button className="btn edit">Edit</button>
-          <button className="btn delete">Delete</button>
-        </td>
-      </tr>
-
+            <td className="actions-cell">
+              <div className="actions-inner">
+                <button className="btn delete" onClick={() => handleDelete(contact.id)}>Delete</button>
+              </div>
+            </td>
+          </tr>
+        );
+      })}
     </tbody>
   </table>
 </div>

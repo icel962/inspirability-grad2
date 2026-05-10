@@ -439,6 +439,14 @@ video {
   margin-bottom: 0;
 }
 
+.story .story-title {
+  color: #050842;
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+}
+
 .story-grid {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   margin-top: 40px;
@@ -597,6 +605,10 @@ video {
     font-size: 36px;
   }
 
+  .story .story-title {
+    font-size: 34px;
+  }
+
   .about-images {
     height: 260px;
   }
@@ -625,5 +637,9 @@ video {
   .home-services .service-card {
     width: 285px !important;
     height: 280px !important;
+  }
+
+  .story .story-title {
+    font-size: 30px;
   }
 }

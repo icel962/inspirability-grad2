@@ -1,11 +1,13 @@
+"use client";
+
+import { Suspense, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { contacts } from "./contacts-data.js";
+import { contacts as staticContacts } from "./contacts-data.js";
 import "./contact-details.css";
 
 function InfoItem({ label, value, href }) {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
   return (
     <div className="contact-profile-card__item">
@@ -18,9 +20,7 @@ function InfoItem({ label, value, href }) {
 }
 
 function ExtraItem({ label, value }) {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
   return (
     <div className="contact-extra-item">
@@ -45,10 +45,35 @@ function ContactNotFound() {
   );
 }
 
-export default async function ContactDetailsPage({ searchParams }) {
-  const params = await searchParams;
-  const selectedId = params?.id;
-  const contact = contacts.find((item) => item.id === selectedId);
+function ContactDetailsContent() {
+  const searchParams = useSearchParams();
+  const contactId = searchParams.get("id");
+
+  // Read localStorage synchronously on first render — no flash of "not found"
+  const [storedContacts] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem("contactsData");
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const allContacts = useMemo(() => {
+    const merged = [...staticContacts, ...storedContacts];
+    console.log("Contact ID from URL:", contactId);
+    console.log("Details stored contacts:", storedContacts);
+    console.log("Details all contacts:", merged);
+    return merged;
+  }, [storedContacts, contactId]);
+
+  const contact = allContacts.find(
+    (item) => String(item.id) === String(contactId)
+  );
+  console.log("Matched contact:", contact);
+
   const fallbackImage = "/images/unnamed.png";
 
   return (
@@ -76,25 +101,30 @@ export default async function ContactDetailsPage({ searchParams }) {
 
                     <div className="contact-profile-card__avatar">
                       <img
-                        src={contact.image ? `/${contact.image}` : fallbackImage}
+                        src={
+                          contact.image?.startsWith("data:")
+                            ? contact.image
+                            : contact.image
+                              ? `/${contact.image}`
+                              : fallbackImage
+                        }
                         alt={contact.name}
+                        onError={(e) => { e.currentTarget.src = fallbackImage; }}
                       />
                     </div>
 
-                    <h1 className="contact-profile-card__name">
-                      {contact.name}
-                    </h1>
+                    <h1 className="contact-profile-card__name">{contact.name}</h1>
                     <p className="contact-profile-card__role">{contact.role}</p>
 
                     <div className="contact-profile-card__badges">
                       <span className="contact-badge contact-badge--status">
                         {contact.status || "Available"}
                       </span>
-                      {contact.category ? (
+                      {contact.category && (
                         <span className="contact-badge contact-badge--category">
                           {contact.category}
                         </span>
-                      ) : null}
+                      )}
                     </div>
 
                     <div className="contact-profile-card__list">
@@ -109,10 +139,7 @@ export default async function ContactDetailsPage({ searchParams }) {
                         value={contact.email}
                       />
                       <InfoItem label="Location" value={contact.location} />
-                      <InfoItem
-                        label="Availability"
-                        value={contact.availability}
-                      />
+                      <InfoItem label="Availability" value={contact.availability} />
                       <InfoItem label="Response" value={contact.contactHours} />
                     </div>
                   </aside>
@@ -122,9 +149,7 @@ export default async function ContactDetailsPage({ searchParams }) {
                       <p className="contact-overview-card__eyebrow">
                         Professional profile
                       </p>
-                      <h2 className="contact-overview-card__title">
-                        {contact.name}
-                      </h2>
+                      <h2 className="contact-overview-card__title">{contact.name}</h2>
                       <p className="contact-overview-card__subtitle">
                         {[contact.role, contact.specialization]
                           .filter(Boolean)
@@ -135,15 +160,14 @@ export default async function ContactDetailsPage({ searchParams }) {
                         <div className="contact-stat">
                           <span className="contact-stat__label">Budget</span>
                           <span className="contact-stat__value">
-                            {contact.budgetValue ||
-                              contact.budgetLabel ||
-                              "Not listed"}
+                            {contact.budgetValue || contact.budgetLabel || "Not listed"}
                           </span>
                         </div>
                         <div className="contact-stat">
                           <span className="contact-stat__label">Distance</span>
                           <span className="contact-stat__value">
-                            {contact.distanceLabel || "Not listed"}
+                            {contact.distanceLabel ||
+                              (contact.distanceKm ? `${contact.distanceKm} km away` : "Not listed")}
                           </span>
                         </div>
                         <div className="contact-stat">
@@ -166,10 +190,7 @@ export default async function ContactDetailsPage({ searchParams }) {
                     <section className="contact-extra-card">
                       <h3 className="contact-section-title">Key Details</h3>
                       <div className="contact-extra-grid">
-                        <ExtraItem
-                          label="Specialization"
-                          value={contact.specialization}
-                        />
+                        <ExtraItem label="Specialization" value={contact.specialization} />
                         <ExtraItem label="Category" value={contact.category} />
                         <ExtraItem
                           label="Budget"
@@ -177,7 +198,10 @@ export default async function ContactDetailsPage({ searchParams }) {
                         />
                         <ExtraItem
                           label="Distance"
-                          value={contact.distanceLabel}
+                          value={
+                            contact.distanceLabel ||
+                            (contact.distanceKm ? `${contact.distanceKm} km away` : "")
+                          }
                         />
                         <ExtraItem
                           label="Reviews"
@@ -198,5 +222,13 @@ export default async function ContactDetailsPage({ searchParams }) {
         </section>
       </main>
     </div>
+  );
+}
+
+export default function ContactDetailsPage() {
+  return (
+    <Suspense fallback={<div className="contact-details-empty">Loading...</div>}>
+      <ContactDetailsContent />
+    </Suspense>
   );
 }

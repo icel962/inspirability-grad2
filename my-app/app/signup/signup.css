@@ -8,6 +8,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 72px;
+  box-sizing: border-box;
 }
 
 /* CARD */
@@ -22,7 +24,13 @@ body {
 
   animation: fadeIn 0.6s ease;
 }
-
+.role-selection h2{
+  font-size: 22px;
+  font-weight: 700;
+  color: #0a0f5c;
+  margin: 0;
+  text-align: left;
+}
 /* LEFT */
 .left {
   flex: 1;
@@ -86,12 +94,19 @@ body {
   align-items: center;
  overflow-y: auto;
   gap: 10px;
-  padding: 20px;
+  padding: 44px 20px 20px;
+}
+
+.right.right--form {
+  justify-content: flex-start;
+  padding-top: 64px;
 }
 
 /* INPUT */
 /* ================= INPUT ================= */
-.right input {
+.right input,
+.right select,
+.right textarea {
   width: 100%;
   padding: 16px 18px;
   border-radius: 12px;
@@ -99,27 +114,73 @@ body {
   font-size: 15px;
   background: #fff;
   color: #333;
+  font-family: inherit;
 
   transition: all 0.25s ease;
 }
 
+.right textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
 /* placeholder */
-.right input::placeholder {
+.right input::placeholder,
+.right textarea::placeholder {
   color: #aaa;
   font-weight: 500;
 }
 
 /* hover */
-.right input:hover {
+.right input:hover,
+.right select:hover,
+.right textarea:hover {
   border-color: #bbb;
 }
 
-/* focus 🔥 */
-.right input:focus {
+/* focus */
+.right input:focus,
+.right select:focus,
+.right textarea:focus {
   outline: none;
   border-color: #2d3cff;
   box-shadow: 0 0 0 3px rgba(45, 60, 255, 0.15);
   transform: scale(1.02);
+}
+
+.right textarea:focus {
+  transform: none;
+}
+
+.right .input-group label {
+  color: #1f2937 !important;
+}
+
+.right .input-group .required-star {
+  color: #dc2626;
+  margin-left: 4px;
+  font-weight: 800;
+}
+
+.right .input-group--error input,
+.right .input-group--error select,
+.right .input-group--error textarea {
+  border-color: #dc2626;
+  background: #fff7f7;
+}
+
+/* Full-width field (textarea spans entire form width) */
+.input-group--full {
+  grid-column: 1 / -1;
+}
+
+.signup-field-error {
+  margin: 6px 0 0;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 /* BUTTONS */
@@ -260,6 +321,11 @@ button {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
+}
+
+/* Media upload step — allow slightly wider layout */
+.form-step--media {
+  max-width: 480px;
 }
 
 /* SUCCESS */

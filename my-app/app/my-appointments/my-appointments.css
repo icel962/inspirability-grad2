@@ -1,118 +1,165 @@
-.parent-container {
-  padding: 40px;
-  max-width: 1000px;
-  margin: auto;
+/* ── Page wrapper ─────────────────────────────────────────────────────────── */
+.ma-page {
+  min-height: 100vh;
+  background: #0a032d;
+  padding: 48px 24px 64px;
 }
 
-.title {
+/* ── Title ───────────────────────────────────────────────────────────────── */
+.ma-title {
   color: #fff;
-  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
   text-align: center;
+  margin: 0 0 36px;
+  letter-spacing: 0.5px;
 }
 
-.appointment-card {
-  background: #1c1f3a;
-  color: white;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  transition: 0.3s;
+/* ── Empty / loading state ───────────────────────────────────────────────── */
+.ma-empty {
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  font-size: 16px;
+  margin-top: 60px;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.ma-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 20px;
-  align-items: start;
+  background: #1c1f3a;
+  border-radius: 16px;
+  padding: 28px 24px 24px;
+  margin: 0 auto 24px;
+  max-width: 900px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.appointment-card:hover {
-  transform: translateY(-5px);
+.ma-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
 }
 
-.card-info {
+/* ── Delete button ───────────────────────────────────────────────────────── */
+.ma-delete-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 4px;
+  line-height: 1;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.ma-delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.25);
+}
+
+/* ── Two-column grid ─────────────────────────────────────────────────────── */
+.ma-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px 20px;
+  gap: 0 32px;
 }
 
-.card-info p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 8px 0;
+.ma-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.card-info p:nth-child(7),
-.card-info p:nth-child(8) {
+/* ── Field row ───────────────────────────────────────────────────────────── */
+.ma-field {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ma-field:last-child {
+  border-bottom: none;
+}
+
+/* Full-width rows (Notes, Status) */
+.ma-field--full {
   grid-column: 1 / -1;
 }
 
-.card-info strong {
-  font-weight: 600;
+/* ── Labels & values ─────────────────────────────────────────────────────── */
+.ma-label {
+  font-size: 11px;
+  font-weight: 700;
   color: #00bfff;
-  margin-right: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
 }
 
-/* STATUS COLORS */
-.status {
-  font-weight: bold;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 13px;
+.ma-value {
+  font-size: 14px;
+  color: #e8eaf6;
+  font-weight: 500;
+  word-break: break-word;
 }
 
-.status.pending {
-  color: #ffa500;
-  background: rgba(255, 165, 0, 0.2);
+/* ── Status badge ────────────────────────────────────────────────────────── */
+.ma-status {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
 }
 
-.status.approved {
-  color: #00ff00;
-  background: rgba(0, 255, 0, 0.2);
+.ma-status--pending {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
-.status.rejected {
-  color: #ff4444;
-  background: rgba(255, 68, 68, 0.2);
+.ma-status--approved {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
 }
 
-.delete-icon {
-  font-size: 24px;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: 0.3s;
-  padding: 5px;
-  align-self: flex-start;
-  margin-top: 5px;
+.ma-status--rejected {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
-.delete-icon:hover {
-  opacity: 1;
-  transform: scale(1.3);
-}
-
-@media (max-width: 768px) {
-  .parent-container {
-    padding: 20px;
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .ma-page {
+    padding: 32px 16px 48px;
   }
 
-  .appointment-card {
+  .ma-title {
+    font-size: 22px;
+  }
+
+  .ma-grid {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 0;
   }
 
-  .card-info {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .card-info p:nth-child(7),
-  .card-info p:nth-child(8) {
+  .ma-field--full {
     grid-column: auto;
   }
 
-  .delete-icon {
-    align-self: center;
-    margin-top: 0;
+  .ma-card {
+    padding: 24px 16px 20px;
+  }
+
+  .ma-delete-btn {
+    top: 12px;
+    right: 12px;
   }
 }

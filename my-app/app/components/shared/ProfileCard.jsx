@@ -15,12 +15,15 @@ const ProfileCard = ({ item }) => {
       data-distance={item.distance ?? ""}
     >
       <div className="card-header">
-        <div className="logo-container">
-          {item.image ? (
-            <img src={item.image} alt={item.name} />
-          ) : (
-            <div className="placeholder-logo">No Logo</div>
-          )}
+        <div className="profile-photo-container">
+          <img
+            src={item.profilePhoto || item.image || "/images/default-profile.svg"}
+            alt={item.name || "Profile photo"}
+            className="profile-photo"
+            onError={(e) => {
+              e.target.src = "/images/default-profile.svg";
+            }}
+          />
         </div>
 
         <h3 className="school-title">{item.name}</h3>
@@ -41,9 +44,19 @@ const ProfileCard = ({ item }) => {
         </div>
 
         <div className="card-actions">
-          <button className="btn secondary" type="button">
-            View Details
-          </button>
+          {item.detailsHref ? (
+            <Link className="action-link" href={item.detailsHref}>
+              <button className="btn secondary" type="button">
+                View Details
+              </button>
+            </Link>
+          ) : (
+            <span className="action-link">
+              <button className="btn secondary" type="button">
+                View Details
+              </button>
+            </span>
+          )}
           <Link className="action-link" href={item.appointmentHref}>
             <button className="btn primary" type="button">
               Book Appointment

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { contacts } from "../contact-details/contacts-data";
 import "./contacts.css";
@@ -45,6 +45,10 @@ const maxPrice = Math.max(...prices);
 const distances = Object.values(contactDistancesKm);
 const minDistance = Math.min(...distances);
 const maxDistance = Math.max(...distances);
+
+function getContactDistance(contact) {
+  return contactDistancesKm[contact.id] || contact.distanceKm || 15;
+}
 
 function getContactPrice(contact) {
   const price = contact.budgetValue?.match(/\d+/)?.[0];
@@ -97,12 +101,34 @@ export default function ContactsDirectoryPage() {
     review: "all",
   });
   const [favorites, setFavorites] = useState([]);
+  const [storedContacts, setStoredContacts] = useState([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("contactsData");
+      const parsed = raw ? JSON.parse(raw) : [];
+      console.log("Public stored contacts:", parsed);
+      setStoredContacts(Array.isArray(parsed) ? parsed : []);
+    } catch {
+      setStoredContacts([]);
+    }
+  }, []);
+
+  const allContacts = useMemo(() => {
+    const merged = [...contacts, ...storedContacts];
+    console.log("Public all contacts:", merged);
+    return merged;
+  }, [storedContacts]);
+
+  const mergedMaxPrice = useMemo(() => {
+    const storedPrices = storedContacts.map((c) => getContactPrice(c));
+    return Math.max(maxPrice, ...storedPrices);
+  }, [storedContacts]);
 
   const filteredContacts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return contacts.filter((contact) =>
-      {
+    return allContacts.filter((contact) => {
         const searchable = [
         contact.name,
         contact.role,
@@ -117,7 +143,7 @@ export default function ContactsDirectoryPage() {
           .includes(normalizedQuery);
 
         const price = getContactPrice(contact);
-        const distance = contactDistancesKm[contact.id] || maxDistance;
+        const distance = getContactDistance(contact);
         const review = Number(contact.review || 0);
 
         return (
@@ -130,7 +156,7 @@ export default function ContactsDirectoryPage() {
         );
       }
     );
-  }, [filters, query]);
+  }, [filters, query, allContacts]);
 
   const handleFilterChange = (filterName, value) => {
     setFilters((current) => ({ ...current, [filterName]: value }));
@@ -194,7 +220,7 @@ export default function ContactsDirectoryPage() {
                     </div>
                     <input
                       aria-label="Maximum budget"
-                      max={maxPrice}
+                      max={mergedMaxPrice}
                       min={minPrice}
                       onChange={(event) =>
                         setFilters((current) => ({
@@ -208,7 +234,7 @@ export default function ContactsDirectoryPage() {
                     />
                     <div className="contacts-price-filter__range">
                       <span>EGP {minPrice}</span>
-                      <span>EGP {maxPrice}</span>
+                      <span>EGP {mergedMaxPrice}</span>
                     </div>
                   </div>
 
@@ -298,7 +324,17 @@ export default function ContactsDirectoryPage() {
                   return (
                     <article className="contact-card" key={contact.id}>
                       <div className="contact-card__avatar">
-                        <img src={`/${contact.image}`} alt={contact.name} />
+                        <img
+                          src={
+                            contact.image?.startsWith("data:")
+                              ? contact.image
+                              : contact.image
+                                ? `/${contact.image}`
+                                : "/images/default-profile.svg"
+                          }
+                          alt={contact.name}
+                          onError={(e) => { e.currentTarget.src = "/images/default-profile.svg"; }}
+                        />
                       </div>
 
                       <div className="contact-card__content">

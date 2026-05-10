@@ -1,19 +1,17 @@
 "use client";
 import "./pricing.css";
 import Navbar from "../components/Navbar";
-import { useState, useEffect } from "react"; 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function PricingPage() {
-  const [isMonthly, setIsMonthly] = useState(true);
-  const [mounted, setMounted] = useState(false); 
+  const [billingCycle, setBillingCycle] = useState("monthly");
   const router = useRouter();
+  const isMonthly = billingCycle === "monthly";
 
   useEffect(() => {
-    setMounted(true);
+    setBillingCycle("monthly");
   }, []);
-
-  if (!mounted) return null; 
 
   const handleUpgrade = (plan, amount) => {
     const duration = isMonthly ? "Monthly" : "Yearly";
@@ -34,17 +32,28 @@ export default function PricingPage() {
         </p>
 
         {/* Toggle */}
-        <div className="toggle">
-          <span className={isMonthly ? "active" : ""}>Monthly</span>
+        <div className="billing-toggle">
+          <span className={`billing-label ${isMonthly ? "active" : ""}`}>
+            Monthly
+          </span>
 
-          <div
-            className="switch"
-            onClick={() => setIsMonthly(!isMonthly)}
+          <button
+            type="button"
+            className={`billing-switch ${isMonthly ? "" : "is-annual"}`}
+            aria-label="Toggle annual billing"
+            aria-pressed={!isMonthly}
+            onClick={() =>
+              setBillingCycle((current) =>
+                current === "monthly" ? "annual" : "monthly"
+              )
+            }
           >
-            <div className={`circle ${isMonthly ? "" : "right"}`} />
-          </div>
+            <span className="billing-knob" />
+          </button>
 
-          <span className={!isMonthly ? "active" : ""}>Annually</span>
+          <span className={`billing-label ${!isMonthly ? "active" : ""}`}>
+            Annually
+          </span>
         </div>
 
         {/* Cards */}

@@ -1,146 +1,147 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { apiUrl } from "@/app/lib/api";
+import { normalizeAppointment } from "@/app/lib/normalizeAppointment";
 import "./my-appointments.css";
 
 export default function MyAppointments() {
+  const router = useRouter();
   const [appointments, setAppointments] = useState([]);
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    phone: ""
-  });
-
-  // Fetch user profile data
-  const fetchUserData = async (token) => {
-    try {
-      const res = await axios.get(
-        apiUrl("/api/parents/me"),
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setUserData({
-        name: res.data.name || "",
-        email: res.data.email || "",
-        phone: res.data.tel_no || ""
-      });
-    } catch (err) {
-      console.error("Error fetching user data:", err);
-    }
-  };
-
-  const fetchAppointments = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      
-      // Fetch user data first
-      await fetchUserData(token);
-
-      const res = await axios.get(
-  apiUrl("/api/appointments/my"),
-  {
-    headers: { Authorization: `Bearer ${token}` },
-  }
-);
-
-      setAppointments(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const [profileFallback, setProfileFallback] = useState({ name: "", email: "", phone: "" });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAppointments();
-  }, []);
+    const token = localStorage.getItem("token");
+    if (!token) { router.push("/login"); return; }
+
+    const headers = { Authorization: `Bearer ${token}` };
+
+    // Fetch profile + appointments in parallel
+    Promise.allSettled([
+      axios.get(apiUrl("/api/profile"),          { headers }),
+      axios.get(apiUrl("/api/appointments/my"),  { headers }),
+    ]).then(([profileRes, apptRes]) => {
+      // Profile → used as fallback when JOIN columns are null
+      if (profileRes.status === "fulfilled") {
+        const p = profileRes.value.data?.profile || {};
+        setProfileFallback({
+          name:  p.name   || "",
+          email: p.email  || "",
+          phone: p.tel_no || "",
+        });
+      }
+
+      // Appointments
+      if (apptRes.status === "fulfilled") {
+        setAppointments(apptRes.value.data || []);
+      } else {
+        console.error("Failed to fetch appointments:", apptRes.reason);
+      }
+    }).finally(() => setLoading(false));
+  }, [router]);
 
   const handleDelete = async (id) => {
-  const token = localStorage.getItem("token");
-
-  if (!confirm("Are you sure you want to delete this request?")) return;
-
-  try {
-    await axios.delete(
-      apiUrl(`/api/appointments/${id}`),
-      {
+    const token = localStorage.getItem("token");
+    if (!confirm("Are you sure you want to delete this appointment request?")) return;
+    try {
+      await axios.delete(apiUrl(`/api/appointments/${id}`), {
         headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+      });
+      setAppointments((prev) => prev.filter((a) => a.appointment_id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Could not delete the appointment. Please try again.");
+    }
+  };
 
-    setAppointments(prev =>
-      prev.filter(a => a.appointment_id !== id)
+  if (loading) {
+    return (
+      <div className="ma-page">
+        <h2 className="ma-title">My Appointments</h2>
+        <p className="ma-empty">Loading...</p>
+      </div>
     );
-
-  } catch (err) {
-    console.error(err);
   }
-};
 
   return (
-  <div className="parent-container">
-    <h2 className="title">My Appointments</h2>
+    <div className="ma-page">
+      <h2 className="ma-title">My Appointments</h2>
 
-    {appointments.map((a) => (
-      <div key={a.appointment_id} className="appointment-card">
+      {appointments.length === 0 ? (
+        <p className="ma-empty">You have no appointments yet.</p>
+      ) : (
+        appointments.map((raw) => {
+          const a = normalizeAppointment(raw, profileFallback);
+          return (
+            <div key={a.id} className="ma-card">
 
-        <div className="card-info">
-          <p>
-            <strong>Full Name:</strong>{" "}
-            {userData.name || "N/A"}
-          </p>
+              {/* DELETE BUTTON — pending only */}
+              {raw.status === "pending" && (
+                <button
+                  className="ma-delete-btn"
+                  onClick={() => handleDelete(a.id)}
+                  title="Delete appointment"
+                >
+                  🗑️
+                </button>
+              )}
 
-          <p>
-            <strong>Email Address:</strong>{" "}
-            {userData.email || "N/A"}
-          </p>
+              {/* TWO-COLUMN GRID */}
+              <div className="ma-grid">
 
-          <p>
-            <strong>Phone Number:</strong>{" "}
-            {userData.phone || "N/A"}
-          </p>
+                {/* LEFT COLUMN */}
+                <div className="ma-col">
+                  <div className="ma-field">
+                    <span className="ma-label">Full Name</span>
+                    <span className="ma-value">{a.fullName}</span>
+                  </div>
+                  <div className="ma-field">
+                    <span className="ma-label">Phone Number</span>
+                    <span className="ma-value">{a.phone}</span>
+                  </div>
+                  <div className="ma-field">
+                    <span className="ma-label">Preferred Date</span>
+                    <span className="ma-value">{a.preferredDate}</span>
+                  </div>
+                </div>
 
-          <p>
-            <strong>Appointment Type:</strong>{" "}
-            {a.appointment_type || (a.type === "school" ? a.school_name : a.type === "sport" ? a.sport_center_name : a.type === "clinic" ? a.clinic_name : a.type) || "N/A"}
-          </p>
+                {/* RIGHT COLUMN */}
+                <div className="ma-col">
+                  <div className="ma-field">
+                    <span className="ma-label">Email Address</span>
+                    <span className="ma-value">{a.email}</span>
+                  </div>
+                  <div className="ma-field">
+                    <span className="ma-label">Appointment Type</span>
+                    <span className="ma-value">{a.appointmentType}</span>
+                  </div>
+                  <div className="ma-field">
+                    <span className="ma-label">Preferred Time</span>
+                    <span className="ma-value">{a.preferredTime}</span>
+                  </div>
+                </div>
 
-          <p>
-            <strong>Preferred Date:</strong>{" "}
-            {a.appointment_date ? new Date(a.appointment_date).toLocaleDateString() : "N/A"}
-          </p>
+                {/* FULL-WIDTH ROWS */}
+                <div className="ma-field ma-field--full">
+                  <span className="ma-label">Notes</span>
+                  <span className="ma-value">{a.notes || "No notes"}</span>
+                </div>
 
-          <p>
-            <strong>Preferred Time:</strong>{" "}
-            {a.appointment_time || "N/A"}
-          </p>
+                <div className="ma-field ma-field--full">
+                  <span className="ma-label">Status</span>
+                  <span className={`ma-status ma-status--${a.status}`}>
+                    {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+                  </span>
+                </div>
 
-          <p>
-            <strong>Notes:</strong>{" "}
-            {a.notes || "None"}
-          </p>
-
-          <p>
-            <strong>Status:</strong>{" "}
-            <span className={`status ${a.status}`}>
-              {a.status}
-            </span>
-          </p>
-        </div>
-
-        {/* 🗑️ أيقونة الحذف */}
-        {a.status === "pending" && (
-          <div
-            className="delete-icon"
-            onClick={() => handleDelete(a.appointment_id)}
-          >
-            🗑️
-          </div>
-        )}
-
-      </div>
-    ))}
-  </div>
-);
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
 }

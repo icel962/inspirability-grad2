@@ -1,0 +1,242 @@
+/* ── Wrapper ──────────────────────────────────────────────────────────────── */
+.mu-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Heading ─────────────────────────────────────────────────────────────── */
+.mu-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a0f5c;
+  margin: 0;
+}
+
+.mu-subheading {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Selected badge ──────────────────────────────────────────────────────── */
+.mu-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0f2fe;
+  color: #0a0f5c;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+/* ── Section list ────────────────────────────────────────────────────────── */
+.mu-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Single upload section ───────────────────────────────────────────────── */
+.mu-section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+
+.mu-section:hover {
+  border-color: #c7d2fe;
+}
+
+/* ── Section header ──────────────────────────────────────────────────────── */
+.mu-section-hd {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mu-section-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  line-height: 1;
+}
+
+.mu-section-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mu-section-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 2px;
+}
+
+.mu-section-hint {
+  font-size: 11.5px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── File list ───────────────────────────────────────────────────────────── */
+.mu-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── File card ───────────────────────────────────────────────────────────── */
+.mu-file-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+/* ── Thumbnail ───────────────────────────────────────────────────────────── */
+.mu-thumb {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mu-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mu-thumb-icon {
+  font-size: 18px;
+}
+
+/* ── File name + size ────────────────────────────────────────────────────── */
+.mu-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mu-fname {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mu-fsize {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ── Remove button ───────────────────────────────────────────────────────── */
+.mu-remove {
+  flex-shrink: 0;
+  background: #fee2e2;
+  border: none;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 6px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.mu-remove:hover {
+  background: #fca5a5;
+}
+
+/* ── Drop zone ───────────────────────────────────────────────────────────── */
+.mu-dz {
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background: #fafbff;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+  outline: none;
+}
+
+.mu-dz:hover,
+.mu-dz:focus,
+.mu-dz--over {
+  border-color: #2d3cff;
+  background: rgba(45, 60, 255, 0.04);
+}
+
+.mu-dz-arrow {
+  font-size: 20px;
+  color: #9ca3af;
+  line-height: 1;
+}
+
+.mu-dz--over .mu-dz-arrow {
+  color: #2d3cff;
+}
+
+.mu-dz-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.mu-dz-types {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 500px) {
+  .mu-section {
+    padding: 12px;
+  }
+
+  .mu-heading {
+    font-size: 17px;
+  }
+
+  .mu-section-label {
+    font-size: 13px;
+  }
+}
